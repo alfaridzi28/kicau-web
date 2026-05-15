@@ -18,9 +18,9 @@ export default function WargaIuranPage() {
         .catch(console.error)
         .finally(() => setLoading(false));
 
-      apiFetch(`/warga?rt=${user.rt}&rw=${user.rw}`)
+      apiFetch(`/warga?rt=${user.rt}&rw=${user.rw}&limit=100`)
         .then(data => {
-           const chair = data.find((w: any) => w.role === 'rt');
+           const chair = data.items?.find((w: any) => w.role === 'rt');
            setRtChair(chair);
         })
         .catch(console.error);

@@ -9,20 +9,27 @@ export default function RWAsetPage() {
   const { user, isLoading, logout } = useAuth();
   const [asetRW, setAsetRW] = useState<any[]>([]);
   const [asetRT, setAsetRT] = useState<any[]>([]);
+  const [totalRW, setTotalRW] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [newAset, setNewAset] = useState({ nama_aset: '', deskripsi: '', jumlah: 1, foto: '', kepemilikan: 'aset_rw' });
   const [uploading, setUploading] = useState(false);
+
+  const limit = 8;
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [rwData, rtData] = await Promise.all([
-        apiFetch(`/aset?rw=${user?.rw}&kepemilikan=aset_rw`),
-        apiFetch(`/aset?rw=${user?.rw}&kepemilikan=aset_rt`)
+      const skip = (page - 1) * limit;
+      const [rwRes, rtRes] = await Promise.all([
+        apiFetch(`/aset?rw=${user?.rw}&kepemilikan=aset_rw&search=${search}&skip=${skip}&limit=${limit}`),
+        apiFetch(`/aset?rw=${user?.rw}&kepemilikan=aset_rt&search=${search}&limit=100`)
       ]);
-      setAsetRW(rwData);
-      setAsetRT(rtData);
+      setAsetRW(rwRes.items);
+      setTotalRW(rwRes.total);
+      setAsetRT(rtRes.items);
     } catch (err) {
       console.error(err);
     } finally {
@@ -34,7 +41,7 @@ export default function RWAsetPage() {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, search, page]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
@@ -90,18 +97,27 @@ export default function RWAsetPage() {
     }
   };
 
+  const totalPages = Math.ceil(totalRW / limit);
+
   if (isLoading || !user) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
   return (
     <div className="flex min-h-screen bg-[#0f172a] text-slate-200">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 p-8 overflow-auto">
-        <header className="flex justify-between items-center mb-8">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
           <div>
-            <h1 className="text-3xl font-extrabold text-white">Manajemen Aset RW</h1>
-            <p className="text-slate-400">Inventaris barang milik RW {user.rw}</p>
+            <h1 className="text-4xl font-black text-white italic tracking-tighter">Manajemen <span className="text-indigo-400">Aset RW</span></h1>
+            <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Total {totalRW} Aset Terdaftar • RW {user.rw}</p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4 w-full md:w-auto">
+            <input 
+               type="text" 
+               placeholder="Cari nama aset..." 
+               className="bg-slate-800/50 border border-white/5 rounded-2xl px-6 py-3 text-xs w-full md:w-64 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+               value={search}
+               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            />
             <ExportButton 
               data={[...asetRW, ...asetRT]}
               filename={`Aset_RW${user.rw}`}
@@ -114,13 +130,13 @@ export default function RWAsetPage() {
                 { key: 'rt', label: 'RT' },
                 { key: 'rw', label: 'RW' }
               ]}
-              label="Export Inventaris"
+              label="Export"
             />
             <button 
               onClick={() => setShowAddModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-emerald-900/40 transition flex items-center gap-2"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-6 py-3 rounded-2xl shadow-xl shadow-indigo-900/20 transition-all active:scale-95 uppercase tracking-widest text-[10px] flex items-center gap-2"
             >
-              <span>➕</span> Tambah Aset RW
+              <span>➕</span> Tambah Aset
             </button>
           </div>
         </header>
@@ -167,6 +183,17 @@ export default function RWAsetPage() {
               </div>
             ))}
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-8">
+               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase border border-white/5 transition-all">← Prev</button>
+               <div className="flex gap-2 text-white font-black text-xs">
+                  {page} / {totalPages}
+               </div>
+               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase border border-white/5 transition-all">Next →</button>
+            </div>
+          )}
         </section>
 
         <section>
@@ -189,14 +216,6 @@ export default function RWAsetPage() {
                       <span className={`text-[9px] font-bold uppercase ${aset.status === 'tersedia' ? 'text-emerald-400' : 'text-red-400'}`}>
                         {aset.status}
                       </span>
-                      {aset.status === 'tersedia' && (
-                        <button 
-                          onClick={() => handleBorrowFromRT(aset.id)}
-                          className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-[10px] font-bold px-2 py-1 rounded transition"
-                        >
-                          Pinjam
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>

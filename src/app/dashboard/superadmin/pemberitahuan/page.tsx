@@ -32,12 +32,28 @@ export default function SuperadminPemberitahuanPage() {
     try {
       await apiFetch('/pemberitahuan', {
         method: 'POST',
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          target_rt: formData.scope === 'global' ? null : formData.rt,
+          target_rw: formData.scope === 'global' ? null : formData.rw,
+          is_publik: true
+        })
       });
       setShowModal(false);
+      setFormData({ judul: '', isi: '', scope: 'global', rt: '', rw: '' });
       fetchNews();
     } catch (err) {
       alert('Gagal mengirim pengumuman');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Hapus pengumuman ini?')) return;
+    try {
+      await apiFetch(`/pemberitahuan/${id}`, { method: 'DELETE' });
+      fetchNews();
+    } catch (err: any) {
+      alert(err.message || 'Gagal menghapus');
     }
   };
 
@@ -76,7 +92,12 @@ export default function SuperadminPemberitahuanPage() {
                 <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-4">{item.isi}</p>
                 <div className="flex justify-between items-center mt-auto pt-6 border-t border-white/5">
                    <span className="text-[10px] text-slate-500 font-mono italic">{new Date(item.created_at).toLocaleDateString()}</span>
-                   <button className="text-red-400 hover:text-red-300 text-[10px] font-black uppercase tracking-widest">Hapus</button>
+                   <button 
+                     onClick={() => handleDelete(item.id)}
+                     className="text-red-400 hover:text-red-300 text-[10px] font-black uppercase tracking-widest transition-colors"
+                   >
+                     Hapus
+                   </button>
                 </div>
              </div>
            ))}
@@ -110,6 +131,30 @@ export default function SuperadminPemberitahuanPage() {
                       placeholder="Detail informasi yang ingin disampaikan..."
                     />
                   </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Target Jangkauan</label>
+                    <select 
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500"
+                      value={formData.scope}
+                      onChange={(e) => setFormData({...formData, scope: e.target.value})}
+                    >
+                       <option value="global" className="bg-slate-900">🌍 Global (Seluruh Kelurahan)</option>
+                       <option value="regional" className="bg-slate-900">📍 Regional (RT/RW Spesifik)</option>
+                    </select>
+                  </div>
+
+                  {formData.scope === 'regional' && (
+                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                       <div>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">RW</label>
+                          <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500" value={formData.rw} onChange={e => setFormData({...formData, rw: e.target.value})} placeholder="01" />
+                       </div>
+                       <div>
+                          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">RT</label>
+                          <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500" value={formData.rt} onChange={e => setFormData({...formData, rt: e.target.value})} placeholder="05" />
+                       </div>
+                    </div>
+                  )}
                   <div className="flex gap-4">
                      <button type="button" onClick={() => setShowModal(false)} className="flex-1 bg-white/5 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-white/10 transition">Batal</button>
                      <button type="submit" className="flex-1 bg-purple-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-purple-500 transition shadow-lg shadow-purple-900/40">Siarkan Sekarang</button>

@@ -1,18 +1,25 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth, apiFetch } from '@/lib/auth';
 import Sidebar from '@/components/Sidebar';
 import StatCard from '@/components/StatCard';
 
 export default function RTDashboard() {
   const { user, isLoading, logout } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<any>(null);
   const [aduan, setAduan] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
+      if (user.effective_role !== 'rt' && user.role !== 'rt' && user.role !== 'superadmin' && user.role !== 'lurah') {
+        router.push('/dashboard/warga');
+        return;
+      }
+
       const fetchData = async () => {
         try {
           const [statsData, aduanData] = await Promise.all([

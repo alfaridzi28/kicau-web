@@ -12,60 +12,52 @@ const menuByRole: Record<string, { label: string; icon: string; href: string }[]
   lurah: [
     { label: 'Dashboard', icon: '📊', href: '/dashboard/lurah' },
     { label: 'Data Warga', icon: '👥', href: '/dashboard/lurah/warga' },
-    { label: 'Peta Warga', icon: '🗺️', href: '/dashboard/lurah/peta' },
     { label: 'Bansos', icon: '🤝', href: '/dashboard/lurah/bansos' },
-    { label: 'Aduan', icon: '📢', href: '/dashboard/lurah/aduan' },
+    { label: 'Aset Wilayah', icon: '🏪', href: '/dashboard/lurah/aset' },
+    { label: 'Aduan Warga', icon: '📢', href: '/dashboard/lurah/aduan' },
     { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/lurah/surat' },
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/lurah/pemberitahuan' },
   ],
   superadmin: [
-    { label: 'Dashboard', icon: '📊', href: '/dashboard/superadmin' },
+    { label: 'Master Dashboard', icon: '📊', href: '/dashboard/superadmin' },
     { label: 'Manajemen User', icon: '👥', href: '/dashboard/superadmin/warga' },
-    { label: 'Peta Warga', icon: '🗺️', href: '/dashboard/superadmin/peta' },
+    { label: 'Peta Global', icon: '🗺️', href: '/dashboard/superadmin/peta' },
     { label: 'Iuran & Kas', icon: '💰', href: '/dashboard/superadmin/iuran' },
-    { label: 'Bansos', icon: '🤝', href: '/dashboard/superadmin/bansos' },
-    { label: 'Aduan', icon: '📢', href: '/dashboard/superadmin/aduan' },
-    { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/superadmin/surat' },
-    { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/superadmin/pemberitahuan' },
+    { label: 'Manajemen Bansos', icon: '🤝', href: '/dashboard/superadmin/bansos' },
+    { label: 'Inventaris Sistem', icon: '📦', href: '/dashboard/superadmin/aset' },
+    { label: 'Pusat Aduan', icon: '📢', href: '/dashboard/superadmin/aduan' },
+    { label: 'Arsip Surat', icon: '📄', href: '/dashboard/superadmin/surat' },
+    { label: 'Broadcast Global', icon: '🔔', href: '/dashboard/superadmin/pemberitahuan' },
   ],
   staff: [
     { label: 'Dashboard', icon: '📊', href: '/dashboard/lurah' },
     { label: 'Data Warga', icon: '👥', href: '/dashboard/lurah/warga' },
-    { label: 'Iuran & Kas', icon: '💰', href: '/dashboard/lurah/iuran' },
-    { label: 'Bansos', icon: '🤝', href: '/dashboard/lurah/bansos' },
     { label: 'Aduan', icon: '📢', href: '/dashboard/lurah/aduan' },
-    { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/lurah/surat' },
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/lurah/pemberitahuan' },
   ],
   rw: [
     { label: 'Dashboard RW', icon: '📊', href: '/dashboard/rw' },
-    { label: 'Data Warga', icon: '👥', href: '/dashboard/rw/warga' },
-    { label: 'Iuran RT', icon: '💰', href: '/dashboard/rw/iuran' },
-    { label: 'Setting Iuran', icon: '⚙️', href: '/dashboard/rw/iuran/setting' },
-    { label: 'Rekap Bansos', icon: '🤝', href: '/dashboard/rw/bansos' },
-    { label: 'Aduan', icon: '📢', href: '/dashboard/rw/aduan' },
-    { label: 'Peta Aduan', icon: '📍', href: '/dashboard/rw/aduan/peta' },
+    { label: 'Warga RW', icon: '👥', href: '/dashboard/rw/warga' },
+    { label: 'Iuran & Kas', icon: '💰', href: '/dashboard/rw/iuran' },
     { label: 'Aset RW', icon: '🏪', href: '/dashboard/rw/aset' },
-    { label: 'Peminjaman Aset', icon: '🔑', href: '/dashboard/rw/aset/peminjaman' },
+    { label: 'Aduan', icon: '📢', href: '/dashboard/rw/aduan' },
     { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/rw/surat' },
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/rw/pemberitahuan' },
     { label: 'Bagan Organisasi', icon: '🌿', href: '/dashboard/rw/bagan' },
   ],
   rt: [
     { label: 'Dashboard RT', icon: '📊', href: '/dashboard/rt' },
+    { label: 'Bagan Organisasi', icon: '🌿', href: '/dashboard/rt/bagan' },
     { label: 'Warga Saya', icon: '👥', href: '/dashboard/rt/warga' },
     { label: 'Iuran & Kas', icon: '💰', href: '/dashboard/rt/iuran' },
-    { label: 'Setting Iuran', icon: '⚙️', href: '/dashboard/rt/iuran/setting' },
-    { label: 'Data Sosial', icon: '🤝', href: '/dashboard/rt/bansos' },
     { label: 'Aset RT', icon: '🏪', href: '/dashboard/rt/aset' },
-    { label: 'Peminjaman Aset', icon: '🔑', href: '/dashboard/rt/aset/peminjaman' },
     { label: 'Aduan Masuk', icon: '📢', href: '/dashboard/rt/aduan' },
-    { label: 'Peta Aduan', icon: '📍', href: '/dashboard/rt/aduan/peta' },
     { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/rt/surat' },
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/rt/pemberitahuan' },
   ],
   warga: [
     { label: 'Beranda', icon: '🏠', href: '/dashboard/warga' },
+    { label: 'Struktur Wilayah', icon: '🌿', href: '/dashboard/warga/bagan' },
     { label: 'Cek Iuran', icon: '💰', href: '/dashboard/warga/iuran' },
     { label: 'Buat Aduan', icon: '📢', href: '/dashboard/warga/aduan' },
     { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/warga/surat' },
@@ -97,24 +89,28 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   
-  // Calculate effective role for staff
-  let effective = user.role;
-  if (user.role === 'staff') {
-    if (user.rt) effective = 'rt';
-    else if (user.rw) effective = 'rw';
-    else effective = 'lurah';
-  }
+  // Resolve role: prioritaskan effective_role untuk staff agar mendapat menu admin
+  const roleToUse = user?.effective_role || user?.role || 'warga';
   
-  const menu = menuByRole[effective] || menuByRole['warga'];
-  const gradient = roleColors[effective] || roleColors['warga'];
+  // Tentukan menu berdasarkan role aktif
+  const menu = menuByRole[roleToUse as keyof typeof menuByRole] || menuByRole.warga;
+  const gradient = roleColors[roleToUse] || roleColors['warga'];
 
   const isActive = (href: string) => {
     if (pathname === href) return true;
+    // For subpages like /dashboard/superadmin/warga matching /dashboard/superadmin
+    // We only want to highlight the exact match or sub-paths for complex menus
     const hrefParts = href.split('/').filter(Boolean);
-    if (hrefParts.length >= 3) {
-      return pathname.startsWith(href + '/') || pathname === href;
-    }
-    return false;
+    const pathParts = pathname.split('/').filter(Boolean);
+    
+    // Exact match
+    if (pathname === href) return true;
+    
+    // If it's a dashboard root, only match exactly
+    if (hrefParts.length === 2) return pathname === href;
+    
+    // For deeper pages, check startWith
+    return pathname.startsWith(href);
   };
 
   return (

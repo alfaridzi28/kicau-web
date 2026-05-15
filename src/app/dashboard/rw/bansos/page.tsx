@@ -41,10 +41,10 @@ export default function RWBansosPage() {
     <div className="flex min-h-screen bg-[#0f172a] text-slate-200">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 p-8 overflow-auto">
-        <header className="mb-10 flex justify-between items-start">
+        <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <h1 className="text-3xl font-extrabold text-white tracking-tight">Rekapitulasi Sosial RW {user.rw}</h1>
-            <p className="text-slate-400 mt-1">Data penerima bantuan sosial di seluruh wilayah RW</p>
+            <h1 className="text-4xl font-black text-white tracking-tighter italic">Rekap <span className="text-pink-400">Sosial RW {user.rw}</span></h1>
+            <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Monitoring Kesejahteraan Wilayah • {warga.length} Jiwa Terdata</p>
           </div>
           <ExportButton 
             data={warga}
@@ -53,16 +53,21 @@ export default function RWBansosPage() {
               { key: 'nama', label: 'Nama Warga' },
               { key: 'nik', label: 'NIK' },
               { key: 'rt', label: 'RT' },
-              { key: 'is_fakir', label: 'Bantuan Khusus (Fakir)' },
-              { key: 'is_miskin', label: 'Bantuan Sosial (Miskin)' },
-              { key: 'is_ibu_hamil', label: 'Bantuan Logistik (Hamil)' },
-              { key: 'is_balita', label: 'Bantuan Logistik (Balita)' },
+              { key: 'is_fakir', label: 'Fakir' },
+              { key: 'is_miskin', label: 'Miskin' },
+              { key: 'is_ibu_hamil', label: 'Ibu Hamil' },
+              { key: 'is_balita', label: 'Balita' },
               { key: 'alamat', label: 'Alamat' }
             ]}
           />
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+          <div className="bg-slate-800/40 p-6 rounded-[32px] border border-white/5 shadow-xl">
+             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Penerima</p>
+             <p className="text-3xl font-black text-white leading-none">{warga.length}</p>
+             <p className="text-[9px] text-slate-600 font-bold mt-2 uppercase">Seluruh Kategori</p>
+          </div>
           <StatCard title="Fakir" value={stats.fakir} icon="🔴" color="red" />
           <StatCard title="Miskin" value={stats.miskin} icon="🟠" color="orange" />
           <StatCard title="Ibu Hamil" value={stats.ibu_hamil} icon="💗" color="purple" />

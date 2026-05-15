@@ -11,6 +11,8 @@ export default function RTWargaPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedWarga, setSelectedWarga] = useState<any>(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [formData, setFormData] = useState({
     nama: '',
     nik: '',
@@ -21,13 +23,18 @@ export default function RTWargaPage() {
     is_ibu_hamil: false,
     is_balita: false,
   });
+  const limit = 10;
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const endpoint = user?.role === 'rw' ? `/warga?rw=${user.rw}` : `/warga?rt=${user?.rt}&rw=${user?.rw}`;
+      const skip = (page - 1) * limit;
+      const endpoint = user?.role === 'rw' 
+        ? `/warga?rw=${user.rw}&skip=${skip}&limit=${limit}` 
+        : `/warga?rt=${user?.rt}&rw=${user?.rw}&skip=${skip}&limit=${limit}`;
       const data = await apiFetch(endpoint);
-      setWarga(data.filter((w: any) => w.role === 'warga'));
+      setWarga(data.items.filter((w: any) => w.role === 'warga'));
+      setTotal(data.total);
     } catch (err) {
       console.error(err);
     } finally {
@@ -37,7 +44,9 @@ export default function RTWargaPage() {
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user]);
+  }, [user, page]);
+
+  const totalPages = Math.ceil(total / limit);
 
   const handleOpenModal = (w?: any) => {
     if (w) {
@@ -109,7 +118,7 @@ export default function RTWargaPage() {
         <header className="mb-10 flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-extrabold text-white">Kelola Warga RT {user.rt}</h1>
-            <p className="text-slate-400 mt-1">Database kependudukan tingkat RT / RW {user.rw}</p>
+            <p className="text-slate-400 mt-1 uppercase text-[10px] font-black tracking-widest">Total {total} Warga • Halaman {page} dari {totalPages || 1}</p>
           </div>
           <div className="flex gap-4">
             <ExportButton 
@@ -124,28 +133,28 @@ export default function RTWargaPage() {
             />
             <button 
               onClick={() => handleOpenModal()}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-2xl shadow-lg transition flex items-center gap-2"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition flex items-center gap-2 uppercase text-[10px] tracking-widest"
             >
               <span>➕</span> Tambah Warga
             </button>
           </div>
         </header>
 
-        <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
+        <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/5 overflow-hidden shadow-2xl mb-8">
           <table className="w-full text-left">
             <thead className="bg-white/5 text-[10px] uppercase text-slate-500 font-bold">
               <tr>
                 <th className="p-5">Identitas Warga</th>
                 <th className="p-5">Informasi KK</th>
                 <th className="p-5">Status Sosial</th>
-                <th className="p-5 text-right">Aksi</th>
+                <th className="p-6 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {loading ? (
-                <tr><td colSpan={4} className="p-10 text-center">Memuat database...</td></tr>
+                <tr><td colSpan={4} className="p-20 text-center animate-pulse font-black text-slate-500 uppercase">Memuat Database...</td></tr>
               ) : warga.length === 0 ? (
-                <tr><td colSpan={4} className="p-10 text-center text-slate-500 italic">Belum ada warga terdaftar.</td></tr>
+                <tr><td colSpan={4} className="p-10 text-center text-slate-500 italic font-bold">Belum ada warga terdaftar di halaman ini.</td></tr>
               ) : warga.map(w => (
                 <tr key={w.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                   <td className="p-5">
@@ -172,6 +181,17 @@ export default function RTWargaPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 py-4">
+             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase border border-white/5">← Prev</button>
+             <div className="flex gap-2 text-white font-black text-xs">
+                {page} / {totalPages}
+             </div>
+             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase border border-white/5">Next →</button>
+          </div>
+        )}
 
         {/* Modal Form */}
         {showModal && (

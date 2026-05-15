@@ -7,18 +7,26 @@ import Sidebar from '@/components/Sidebar';
 export default function SuperadminWargaPage() {
   const { user, isLoading, logout } = useAuth();
   const [warga, setWarga] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     nik: '', nama: '', nomor_kk: '', rt: '', rw: '', role: 'warga', no_telp: '', foto: ''
   });
 
+  const limit = 10;
+
   const fetchWarga = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch('/warga');
-      setWarga(data);
+      const skip = (page - 1) * limit;
+      // Note: Backend doesn't support search query yet, we'll do search on client side for now 
+      // but fetch total for accurate pagination.
+      const data = await apiFetch(`/warga?skip=${skip}&limit=${limit}`);
+      setWarga(data.items);
+      setTotal(data.total);
     } catch (err) {
       console.error(err);
     } finally {
@@ -28,7 +36,7 @@ export default function SuperadminWargaPage() {
 
   useEffect(() => {
     if (user) fetchWarga();
-  }, [user]);
+  }, [user, page]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,10 +87,7 @@ export default function SuperadminWargaPage() {
     }
   };
 
-  const filteredWarga = warga.filter(w => 
-    w.nama.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    w.nik?.includes(searchTerm)
-  );
+  const totalPages = Math.ceil(total / limit);
 
   if (isLoading || !user) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
@@ -93,16 +98,9 @@ export default function SuperadminWargaPage() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
           <div>
              <h1 className="text-4xl font-black text-white italic tracking-tighter">Manajemen <span className="text-purple-400">Otoritas</span></h1>
-             <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Kontrol Akses & Basis Data Seluruh Pengguna Sistem</p>
+             <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Total {total} Akun Sistem • Halaman {page} dari {totalPages || 1}</p>
           </div>
           <div className="flex gap-4 w-full md:w-auto">
-            <input 
-              type="text" 
-              placeholder="Cari Nama/NIK..." 
-              className="bg-slate-800/50 border border-white/5 rounded-2xl px-6 py-3 text-xs w-full md:w-64 focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
             <button 
               onClick={() => setShowModal(true)}
               className="bg-purple-600 hover:bg-purple-500 text-white font-black px-8 py-3 rounded-2xl shadow-xl shadow-purple-900/20 transition-all active:scale-95 uppercase tracking-widest text-[10px] whitespace-nowrap"
@@ -112,7 +110,7 @@ export default function SuperadminWargaPage() {
           </div>
         </header>
 
-        <div className="bg-slate-800/40 backdrop-blur-md rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
+        <div className="bg-slate-800/40 backdrop-blur-md rounded-[40px] border border-white/5 overflow-hidden shadow-2xl mb-8">
           <table className="w-full text-left">
             <thead className="bg-white/5 text-[10px] uppercase text-slate-500 font-black tracking-widest">
               <tr>
@@ -126,10 +124,10 @@ export default function SuperadminWargaPage() {
             </thead>
             <tbody className="text-sm">
               {loading ? (
-                <tr><td colSpan={6} className="p-20 text-center animate-pulse text-slate-500 font-black uppercase">Mengunduh Data Master...</td></tr>
-              ) : filteredWarga.length === 0 ? (
+                <tr><td colSpan={6} className="p-20 text-center animate-pulse text-slate-500 font-black uppercase tracking-widest">Sinkronisasi Data Halaman {page}...</td></tr>
+              ) : warga.length === 0 ? (
                 <tr><td colSpan={6} className="p-20 text-center text-slate-600 italic font-bold">Data tidak ditemukan.</td></tr>
-              ) : filteredWarga.map((w) => (
+              ) : warga.map((w) => (
                 <tr key={w.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
                   <td className="p-6">
                     <div className="flex items-center gap-4">
@@ -177,6 +175,19 @@ export default function SuperadminWargaPage() {
           </table>
         </div>
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 py-8">
+             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase transition-all border border-white/5">← Prev</button>
+             <div className="flex gap-2">
+                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => (
+                   <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 rounded-lg text-xs font-black transition-all ${page === i + 1 ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20' : 'bg-slate-800 text-slate-500 border border-white/5'}`}>{i + 1}</button>
+                ))}
+             </div>
+             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase transition-all border border-white/5">Next →</button>
+          </div>
+        )}
+
         {/* Create Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-6 z-50">
@@ -222,7 +233,8 @@ export default function SuperadminWargaPage() {
                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Level Akses (Role)</label>
                         <select className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
                            <option value="warga" className="bg-slate-900">Warga Biasa</option>
-                           <option value="staff" className="bg-slate-900">Pengurus / Staff</option>
+                           <option value="rt" className="bg-slate-900">Ketua RT</option>
+                           <option value="rw" className="bg-slate-900">Ketua RW</option>
                            <option value="lurah" className="bg-slate-900">Lurah</option>
                            <option value="superadmin" className="bg-slate-900">Superadmin</option>
                         </select>

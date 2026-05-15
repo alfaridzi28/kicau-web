@@ -65,12 +65,21 @@ export default function PetaWarga({ token }: PetaWargaProps) {
   const [showBansos, setShowBansos] = useState(false);
 
   useEffect(() => {
-    // Pastikan hanya diinisialisasi sekali
-    if (mapInstanceRef.current) return;
+    // Pastikan container ada
     if (!mapRef.current) return;
 
+    // Bersihkan jika ada instance lama yang tersangkut di DOM element
+    // (Leaflet menambahkan properti _leaflet_id ke container)
+    if ((mapRef.current as any)._leaflet_id) {
+       return; 
+    }
+
     const initMap = async () => {
+      // Tunggu leaflet dimuat
       const L = (await import('leaflet')).default;
+
+      // Cek ulang setelah async import
+      if (!mapRef.current || (mapRef.current as any)._leaflet_id) return;
 
       // Inject Leaflet CSS ke head jika belum ada
       if (!document.getElementById('leaflet-css')) {
@@ -79,12 +88,10 @@ export default function PetaWarga({ token }: PetaWargaProps) {
         link.rel = 'stylesheet';
         link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
         document.head.appendChild(link);
-        // Tunggu CSS selesai dimuat
-        await new Promise(resolve => { link.onload = resolve; setTimeout(resolve, 500); });
       }
 
-      // Inisialisasi peta dengan center di Indonesia (default Surabaya area)
-      const map = L.map(mapRef.current!, {
+      // Inisialisasi peta
+      const map = L.map(mapRef.current, {
         center: [-7.2575, 112.7521], // Surabaya
         zoom: 15,
         zoomControl: true,

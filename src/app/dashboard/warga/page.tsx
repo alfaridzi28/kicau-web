@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth, apiFetch } from '@/lib/auth';
 import Sidebar from '@/components/Sidebar';
 import StatCard from '@/components/StatCard';
 
 export default function WargaDashboard() {
   const { user, isLoading, logout } = useAuth();
+  const router = useRouter();
   const [iuran, setIuran] = useState<any[]>([]);
   const [aduan, setAduan] = useState<any[]>([]);
   const [pemberitahuan, setPemberitahuan] = useState<any[]>([]);
@@ -15,19 +17,34 @@ export default function WargaDashboard() {
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
+      // Redirect if not warga
+      if (user.effective_role !== 'warga' && user.role !== 'warga') {
+        const routes: Record<string, string> = {
+          superadmin: '/dashboard/superadmin',
+          lurah: '/dashboard/lurah',
+          rw: '/dashboard/rw',
+          rt: '/dashboard/rt'
+        };
+        const target = routes[user.effective_role || user.role] || '/dashboard/warga';
+        if (target !== '/dashboard/warga') {
+           router.push(target);
+           return;
+        }
+      }
+
       const fetchData = async () => {
         try {
           const [iuranData, aduanData, beritaData, staffData] = await Promise.all([
             apiFetch(`/iuran?user_id=${user.id}`),
             apiFetch(`/aduan?user_id=${user.id}`), 
             apiFetch(`/pemberitahuan/publik?rt=${user.rt}&rw=${user.rw}`),
-            apiFetch(`/warga?rt=${user.rt}&rw=${user.rw}`)
+            apiFetch(`/warga?rt=${user.rt}&rw=${user.rw}&limit=100`)
           ]);
           setIuran(iuranData);
           setAduan(aduanData);
           setPemberitahuan(beritaData.pemberitahuan || []);
-          setRtChair(staffData.find((w: any) => w.role === 'rt'));
+          setRtChair(staffData.items?.find((w: any) => w.role === 'rt'));
         } catch (err) {
           console.error(err);
         } finally {

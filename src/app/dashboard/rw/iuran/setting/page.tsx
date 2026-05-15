@@ -14,13 +14,14 @@ export default function RWSettingIuranPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [wargaData, settingsData] = await Promise.all([
-        apiFetch('/warga'),
+      const [wargaRes, settingsData] = await Promise.all([
+        apiFetch(`/warga?rw=${user?.rw}&limit=1000`),
         apiFetch(`/iuran-setting?rw=${user?.rw}`)
       ]);
       
+      const wargaData = wargaRes.items || [];
       // Get unique RTs in this RW
-      const uniqueRts = Array.from(new Set(wargaData.filter((w: any) => w.rw === user?.rw).map((w: any) => w.rt))).sort() as string[];
+      const uniqueRts = Array.from(new Set(wargaData.map((w: any) => w.rt))).filter(Boolean).sort() as string[];
       setRts(uniqueRts);
       setSettings(settingsData);
     } catch (err) {

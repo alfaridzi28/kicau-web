@@ -8,6 +8,7 @@ export default function RWAduanPage() {
   const { user, isLoading, logout } = useAuth();
   const [aduan, setAduan] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('semua');
   const [selectedAduan, setSelectedAduan] = useState<any>(null);
   const [balasan, setBalasan] = useState('');
   const [statusUpdate, setStatusUpdate] = useState('');
@@ -17,7 +18,8 @@ export default function RWAduanPage() {
   const fetchAduan = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch(`/aduan?rw=${user?.rw}`);
+      const statusParam = filter !== 'semua' ? `&status=${filter}` : '';
+      const data = await apiFetch(`/aduan?rw=${user?.rw}${statusParam}`);
       setAduan(data);
     } catch (err) {
       console.error(err);
@@ -30,7 +32,7 @@ export default function RWAduanPage() {
     if (user) {
       fetchAduan();
     }
-  }, [user]);
+  }, [user, filter]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
@@ -65,7 +67,7 @@ export default function RWAduanPage() {
           foto_selesai: fotoSelesai
         })
       });
-      alert("Aduan berhasil diperbarui");
+      alert("Tanggapan berhasil disimpan & Notifikasi dikirim ke Ketua RT terkait");
       setSelectedAduan(null);
       fetchAduan();
     } catch (err: any) {
@@ -75,114 +77,129 @@ export default function RWAduanPage() {
 
   if (isLoading || !user) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
+  const filters = [
+    { id: 'semua', label: 'Semua Aduan', icon: '📋' },
+    { id: 'belum_dibaca', label: 'Baru Masuk', icon: '📩' },
+    { id: 'diproses', label: 'Sedang Diproses', icon: '⚙️' },
+    { id: 'selesai', label: 'Sudah Selesai', icon: '✅' },
+  ];
+
   return (
     <div className="flex min-h-screen bg-[#0f172a] text-slate-200">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 p-8 overflow-auto">
-        <h1 className="text-3xl font-bold mb-8">Manajemen Aduan RW {user.rw}</h1>
+        <header className="mb-10">
+          <h1 className="text-4xl font-black text-white tracking-tighter italic">Pusat <span className="text-indigo-400">Aduan Warga</span></h1>
+          <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Monitoring & Koordinasi Masalah Wilayah RW {user.rw}</p>
+        </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="flex flex-wrap gap-2 mb-8 bg-slate-800/40 p-2 rounded-2xl border border-white/5 w-fit">
+           {filters.map(f => (
+              <button 
+                key={f.id}
+                onClick={() => setFilter(f.id)}
+                className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${filter === f.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                 <span>{f.icon}</span> {f.label}
+              </button>
+           ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {loading ? (
-            <div className="col-span-full py-20 text-center text-slate-500">Memuat data aduan...</div>
+            <div className="col-span-full py-20 text-center text-slate-500 animate-pulse font-black uppercase tracking-widest">Sinkronisasi Aduan...</div>
           ) : aduan.length === 0 ? (
-            <div className="col-span-full py-20 text-center text-slate-500 italic">Tidak ada aduan di wilayah Anda.</div>
+            <div className="col-span-full py-20 text-center bg-slate-800/20 rounded-[40px] border border-dashed border-white/10">
+               <p className="text-slate-500 italic font-bold">Tidak ada aduan dalam kategori ini.</p>
+            </div>
           ) : aduan.map((item) => (
-            <div key={item.id} className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/5 p-6 hover:border-white/10 transition-all flex flex-col">
-              <div className="flex justify-between items-start mb-4">
-                <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
-                  item.status === 'selesai' ? 'bg-emerald-500/20 text-emerald-400' :
-                  item.status === 'diproses' ? 'bg-blue-500/20 text-blue-400' :
-                  'bg-orange-500/20 text-orange-400'
+            <div key={item.id} className="bg-slate-800/40 backdrop-blur-md rounded-[32px] border border-white/5 p-8 hover:border-indigo-500/30 transition-all flex flex-col group shadow-2xl">
+              <div className="flex justify-between items-start mb-6">
+                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter border ${
+                  item.status === 'selesai' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                  item.status === 'diproses' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                  'bg-orange-500/10 text-orange-400 border-orange-500/20'
                 }`}>
                   {item.status.replace('_', ' ')}
                 </span>
-                <p className="text-[10px] text-slate-500 font-medium">{new Date(item.created_at).toLocaleDateString('id-ID')}</p>
+                <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">{new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
               </div>
               
-              <h3 className="text-lg font-bold text-white mb-2">{item.judul}</h3>
-              <p className="text-sm text-slate-400 line-clamp-2 mb-4">{item.isi}</p>
+              <h3 className="text-xl font-black text-white mb-3 group-hover:text-indigo-400 transition-colors">{item.judul}</h3>
+              <p className="text-sm text-slate-400 line-clamp-3 mb-6 leading-relaxed">{item.isi}</p>
               
               {item.foto_bukti && (
-                <img src={item.foto_bukti} alt="Bukti" className="w-full h-32 object-cover rounded-xl mb-4 border border-white/10" />
+                <div className="relative h-40 w-full mb-6 rounded-2xl overflow-hidden border border-white/5">
+                   <img src={item.foto_bukti} alt="Bukti" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
               )}
 
-              <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+              <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-slate-300">RT {item.user?.rt} - {item.user?.nama}</p>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Pelapor</p>
+                  <p className="text-xs font-bold text-white italic">RT {item.user?.rt} — {item.user?.nama}</p>
                 </div>
                 <button 
                   onClick={() => {
                     setSelectedAduan(item);
-                    setStatusUpdate(item.status);
-                    setBalasan(item.balasan || '');
-                    setFotoSelesai(item.foto_selesai || '');
                   }}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-indigo-900/40 transition"
+                  className="bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-black px-5 py-2.5 rounded-full transition-all border border-white/10 uppercase tracking-widest"
                 >
-                  Tindak Lanjut
+                  Lihat Detail
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Modal Tindak Lanjut */}
+        {/* Modal Detail Aduan (View Only) */}
         {selectedAduan && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-xl p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white">Tindak Lanjut Aduan</h2>
-                <button onClick={() => setSelectedAduan(null)} className="text-slate-400 hover:text-white">✕</button>
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div className="bg-slate-900 border border-white/10 rounded-[48px] w-full max-w-2xl p-10 shadow-2xl overflow-y-auto max-h-[90vh] animate-in zoom-in duration-300">
+              <div className="flex justify-between items-center mb-10">
+                <div>
+                  <h2 className="text-3xl font-black text-white italic tracking-tighter">Detail <span className="text-indigo-400">Aduan Warga</span></h2>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">ID: {selectedAduan.id.slice(0,8)} • Status: {selectedAduan.status.replace('_', ' ')}</p>
+                </div>
+                <button onClick={() => setSelectedAduan(null)} className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-white hover:bg-red-500/20 transition-all">✕</button>
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Update Status</label>
-                  <select 
-                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                    value={statusUpdate}
-                    onChange={(e) => setStatusUpdate(e.target.value)}
-                  >
-                    <option value="belum_dibaca">Belum Dibaca</option>
-                    <option value="diproses">Diproses</option>
-                    <option value="selesai">Selesai</option>
-                  </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-8">
+                   <div>
+                      <h3 className="text-xl font-black text-white mb-2">{selectedAduan.judul}</h3>
+                      <p className="text-slate-400 leading-relaxed text-sm">{selectedAduan.isi}</p>
+                   </div>
+                   
+                   {selectedAduan.foto_bukti && (
+                     <div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Foto Bukti Pelapor</p>
+                        <img src={selectedAduan.foto_bukti} alt="Bukti" className="w-full rounded-3xl border border-white/5" />
+                     </div>
+                   )}
                 </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Balasan / Catatan</label>
-                  <textarea 
-                    className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500 h-32"
-                    placeholder="Tulis jawaban atau tindakan yang diambil..."
-                    value={balasan}
-                    onChange={(e) => setBalasan(e.target.value)}
-                  ></textarea>
-                </div>
+                <div className="space-y-8 bg-white/5 p-8 rounded-[32px] border border-white/5">
+                   <div>
+                      <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">Tanggapan Otoritas RT</p>
+                      <div className="bg-slate-950/50 p-6 rounded-2xl border border-white/5 min-h-[100px]">
+                         <p className="text-sm text-slate-300 italic">
+                           {selectedAduan.balasan || "Belum ada tanggapan resmi dari Ketua RT terkait."}
+                         </p>
+                      </div>
+                   </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Foto Bukti Selesai (Opsional)</label>
-                  <div className="flex items-center gap-4">
-                    <input type="file" onChange={handleUpload} className="text-xs text-slate-400" />
-                    {uploading && <span className="text-xs text-indigo-400 animate-pulse">Uploading...</span>}
-                  </div>
-                  {fotoSelesai && (
-                    <img src={fotoSelesai} alt="Selesai" className="mt-4 w-32 h-32 object-cover rounded-xl border border-indigo-500/30" />
-                  )}
-                </div>
+                   {selectedAduan.foto_selesai && (
+                     <div>
+                        <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-3">Foto Bukti Penyelesaian</p>
+                        <img src={selectedAduan.foto_selesai} alt="Selesai" className="w-full rounded-2xl border border-emerald-500/20" />
+                     </div>
+                   )}
 
-                <div className="flex gap-4 pt-4">
-                  <button 
-                    onClick={() => setSelectedAduan(null)}
-                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-2xl transition"
-                  >
-                    Batal
-                  </button>
-                  <button 
-                    onClick={handleProcessAduan}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-2xl shadow-lg shadow-indigo-900/40 transition"
-                  >
-                    Simpan Perubahan
-                  </button>
+                   <div className="pt-4 flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Monitoring Mode Active</p>
+                   </div>
                 </div>
               </div>
             </div>
