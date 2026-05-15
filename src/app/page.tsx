@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const ROLE_TO_ROUTE: Record<string, string> = {
-  superadmin: '/dashboard/lurah',
+  superadmin: '/dashboard/superadmin',
   lurah: '/dashboard/lurah',
   staff: '/dashboard/lurah',
   rw: '/dashboard/rw',
@@ -36,15 +36,20 @@ export default function LandingPage() {
   const router = useRouter();
 
   // Auto-get location and fetch pemberitahuan publik
-  const fetchBerita = useCallback(async (rt?: string, rw?: string) => {
+  const fetchBerita = useCallback(async (lat?: number, lng?: number) => {
     try {
       const params = new URLSearchParams();
-      if (rt) params.set('rt', rt);
-      if (rw) params.set('rw', rw);
+      if (lat) params.set('lat', lat.toString());
+      if (lng) params.set('lng', lng.toString());
       const res = await fetch(`${API_URL}/pemberitahuan/publik?${params}&limit=6`);
       if (res.ok) {
         const data = await res.json();
-        setBerita(data);
+        setBerita(data.pemberitahuan || []);
+        if (data.detected_region) {
+          setLocInfo(`📍 Terdeteksi di wilayah RT ${data.detected_region.rt} / RW ${data.detected_region.rw}`);
+        } else if (lat && lng) {
+          setLocInfo('📍 Lokasi Anda terdeteksi, namun belum ada info RT/RW spesifik');
+        }
       }
     } catch {
       // Gagal diam-diam, tidak tampilkan error di halaman publik
@@ -52,16 +57,25 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
+    // Check if already logged in
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      try {
+        const userInfo = JSON.parse(user);
+        const route = ROLE_TO_ROUTE[userInfo.effective_role || userInfo.role] || '/dashboard/warga';
+        router.push(route);
+        return;
+      } catch (e) {}
+    }
+
     // Coba dapat lokasi dan fetch pemberitahuan yang relevan
     if (navigator.geolocation) {
       setLocating(true);
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           setLocating(false);
-          setLocInfo('📍 Menampilkan pemberitahuan sesuai lokasi Anda');
-          // Untuk sekarang pass lat/lng, backend bisa diperluas untuk reverse geocode
-          // Kita coba fetch tanpa filter dulu, lalu backend filter
-          await fetchBerita();
+          await fetchBerita(pos.coords.latitude, pos.coords.longitude);
         },
         () => {
           setLocating(false);
@@ -72,7 +86,7 @@ export default function LandingPage() {
     } else {
       fetchBerita();
     }
-  }, [fetchBerita]);
+  }, [fetchBerita, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

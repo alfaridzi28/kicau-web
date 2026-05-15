@@ -28,9 +28,9 @@ export default function LoginPage() {
         throw new Error(data.detail || "Login failed");
       }
 
-      // Set token ke cookie (ini contoh, untuk production sebaiknya httpOnly lewat API Routes Next.js)
-      Cookies.set("kicau_token", data.access_token, { expires: 7 });
-      Cookies.set("user_info", JSON.stringify(data.user_info), { expires: 7 });
+      // Set token ke localStorage untuk konsistensi dengan useAuth
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user_info));
 
       // Arahkan ke dashboard sesuai role
       router.push(`/dashboard/${data.role}`);

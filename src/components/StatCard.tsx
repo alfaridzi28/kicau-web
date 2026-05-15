@@ -2,7 +2,7 @@ interface StatCardProps {
   title: string;
   value: string | number;
   icon: string;
-  color: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'cyan';
+  color: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'cyan' | 'indigo' | 'emerald';
   subtitle?: string;
   trend?: string;
 }
@@ -50,10 +50,24 @@ const colorMap = {
     title: 'text-cyan-400',
     value: 'text-cyan-100',
   },
+  indigo: {
+    bg: 'bg-indigo-500/10',
+    border: 'border-indigo-500/20',
+    icon: 'bg-indigo-500/20 text-indigo-400',
+    title: 'text-indigo-400',
+    value: 'text-indigo-100',
+  },
+  emerald: {
+    bg: 'bg-emerald-500/10',
+    border: 'border-emerald-500/20',
+    icon: 'bg-emerald-500/20 text-emerald-400',
+    title: 'text-emerald-400',
+    value: 'text-emerald-100',
+  },
 };
 
 export default function StatCard({ title, value, icon, color, subtitle, trend }: StatCardProps) {
-  const c = colorMap[color];
+  const c = (colorMap as any)[color] || colorMap.blue;
   return (
     <div className={`rounded-2xl border ${c.bg} ${c.border} p-5 flex items-start gap-4 hover:scale-[1.02] transition-transform duration-200`}>
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${c.icon} flex-shrink-0`}>

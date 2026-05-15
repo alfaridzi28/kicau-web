@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import packageJson from '../../package.json';
 
 interface SidebarProps {
   user: { nama: string; role: string; rt?: string; rw?: string };
@@ -18,14 +19,14 @@ const menuByRole: Record<string, { label: string; icon: string; href: string }[]
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/lurah/pemberitahuan' },
   ],
   superadmin: [
-    { label: 'Dashboard', icon: '📊', href: '/dashboard/lurah' },
-    { label: 'Manajemen User', icon: '👥', href: '/dashboard/lurah/warga' },
-    { label: 'Peta Warga', icon: '🗺️', href: '/dashboard/lurah/peta' },
-    { label: 'Iuran & Kas', icon: '💰', href: '/dashboard/lurah/iuran' },
-    { label: 'Bansos', icon: '🤝', href: '/dashboard/lurah/bansos' },
-    { label: 'Aduan', icon: '📢', href: '/dashboard/lurah/aduan' },
-    { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/lurah/surat' },
-    { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/lurah/pemberitahuan' },
+    { label: 'Dashboard', icon: '📊', href: '/dashboard/superadmin' },
+    { label: 'Manajemen User', icon: '👥', href: '/dashboard/superadmin/warga' },
+    { label: 'Peta Warga', icon: '🗺️', href: '/dashboard/superadmin/peta' },
+    { label: 'Iuran & Kas', icon: '💰', href: '/dashboard/superadmin/iuran' },
+    { label: 'Bansos', icon: '🤝', href: '/dashboard/superadmin/bansos' },
+    { label: 'Aduan', icon: '📢', href: '/dashboard/superadmin/aduan' },
+    { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/superadmin/surat' },
+    { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/superadmin/pemberitahuan' },
   ],
   staff: [
     { label: 'Dashboard', icon: '📊', href: '/dashboard/lurah' },
@@ -43,8 +44,10 @@ const menuByRole: Record<string, { label: string; icon: string; href: string }[]
     { label: 'Setting Iuran', icon: '⚙️', href: '/dashboard/rw/iuran/setting' },
     { label: 'Rekap Bansos', icon: '🤝', href: '/dashboard/rw/bansos' },
     { label: 'Aduan', icon: '📢', href: '/dashboard/rw/aduan' },
+    { label: 'Peta Aduan', icon: '📍', href: '/dashboard/rw/aduan/peta' },
     { label: 'Aset RW', icon: '🏪', href: '/dashboard/rw/aset' },
     { label: 'Peminjaman Aset', icon: '🔑', href: '/dashboard/rw/aset/peminjaman' },
+    { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/rw/surat' },
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/rw/pemberitahuan' },
     { label: 'Bagan Organisasi', icon: '🌿', href: '/dashboard/rw/bagan' },
   ],
@@ -57,6 +60,7 @@ const menuByRole: Record<string, { label: string; icon: string; href: string }[]
     { label: 'Aset RT', icon: '🏪', href: '/dashboard/rt/aset' },
     { label: 'Peminjaman Aset', icon: '🔑', href: '/dashboard/rt/aset/peminjaman' },
     { label: 'Aduan Masuk', icon: '📢', href: '/dashboard/rt/aduan' },
+    { label: 'Peta Aduan', icon: '📍', href: '/dashboard/rt/aduan/peta' },
     { label: 'Surat Pengantar', icon: '📄', href: '/dashboard/rt/surat' },
     { label: 'Pemberitahuan', icon: '🔔', href: '/dashboard/rt/pemberitahuan' },
   ],
@@ -92,7 +96,15 @@ const roleLabel: Record<string, string> = {
 export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const effective = (user as any).effective_role || user.role;
+  
+  // Calculate effective role for staff
+  let effective = user.role;
+  if (user.role === 'staff') {
+    if (user.rt) effective = 'rt';
+    else if (user.rw) effective = 'rw';
+    else effective = 'lurah';
+  }
+  
   const menu = menuByRole[effective] || menuByRole['warga'];
   const gradient = roleColors[effective] || roleColors['warga'];
 
@@ -152,10 +164,16 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
 
       {/* Branding + Logout */}
       <div className="p-4 border-t border-white/10 space-y-3">
-        <div className="text-center">
-          <p className="text-white/40 text-xs font-bold tracking-widest">KICAU v1.0.0</p>
-          <p className="text-white/30 text-[10px]">Sistem Administrasi Warga</p>
-          <p className="text-white/20 text-[9px] mt-1 italic">Made by Impuls (Rifqi al faridzi)</p>
+        <div className="text-center px-2">
+          <p className="text-white/40 text-[10px] font-bold tracking-widest uppercase mb-1">
+            KICAU v{packageJson.version} — dibuat oleh Impuls
+          </p>
+          <a 
+            href="mailto:alfaridzi.rifqi28@gmail.com" 
+            className="text-white/20 text-[9px] hover:text-white/40 transition-colors truncate block"
+          >
+            alfaridzi.rifqi28@gmail.com
+          </a>
         </div>
         <button
           onClick={onLogout}

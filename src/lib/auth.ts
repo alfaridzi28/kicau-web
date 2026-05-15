@@ -19,6 +19,7 @@ export interface UserInfo {
 export function useAuth() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export function useAuth() {
     } else {
       router.push('/');
     }
+    setIsLoading(false);
   }, [router]);
 
   const logout = () => {
@@ -37,15 +39,16 @@ export function useAuth() {
     router.push('/');
   };
 
-  return { user, token, logout };
+  return { user, token, logout, isLoading };
 }
 
-export async function apiFetch(endpoint: string, token: string, options?: RequestInit) {
+export async function apiFetch(endpoint: string, options?: RequestInit) {
+  const token = localStorage.getItem('token');
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options?.headers,
     },
   });
