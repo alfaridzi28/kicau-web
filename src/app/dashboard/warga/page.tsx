@@ -19,14 +19,16 @@ export default function WargaDashboard() {
   useEffect(() => {
     if (user && !isLoading) {
       // Redirect if not warga
-      if (user.effective_role !== 'warga' && user.role !== 'warga') {
+      const currentRole = user.effective_role || user.role;
+      if (currentRole !== 'warga') {
         const routes: Record<string, string> = {
           superadmin: '/dashboard/superadmin',
           lurah: '/dashboard/lurah',
           rw: '/dashboard/rw',
-          rt: '/dashboard/rt'
+          rt: '/dashboard/rt',
+          staff: '/dashboard/lurah' // Staff goes to lurah dashboard
         };
-        const target = routes[user.effective_role || user.role] || '/dashboard/warga';
+        const target = routes[currentRole] || '/dashboard/warga';
         if (target !== '/dashboard/warga') {
            router.push(target);
            return;
@@ -39,12 +41,28 @@ export default function WargaDashboard() {
             apiFetch(`/iuran?user_id=${user.id}`),
             apiFetch(`/aduan?user_id=${user.id}`), 
             apiFetch(`/pemberitahuan/publik?rt=${user.rt}&rw=${user.rw}`),
-            apiFetch(`/warga?rt=${user.rt}&rw=${user.rw}&limit=100`)
+            apiFetch(`/warga?rw=${user.rw}&limit=200`) // Fetch all in RW to see RW & RT staff
           ]);
           setIuran(iuranData);
           setAduan(aduanData);
           setPemberitahuan(beritaData.pemberitahuan || []);
-          setRtChair(staffData.items?.find((w: any) => w.role === 'rt'));
+          
+          // Organize officials using jabatan to distinguish scope
+          const allStaff = staffData.items || [];
+          const clean = (s: any) => String(s || '').replace(/^0+/, '') || '0';
+          
+          const rw_chair = allStaff.find((w: any) => w.role === 'rw' && w.jabatan?.toLowerCase().includes('ketua'));
+          const rw_staff = allStaff.find((w: any) => w.role === 'rw' && !w.jabatan?.toLowerCase().includes('ketua'));
+          
+          const rt_chair = allStaff.find((w: any) => w.role === 'rt' && clean(w.rt) === clean(user.rt) && w.jabatan?.toLowerCase().includes('ketua'));
+          const rt_staff = allStaff.find((w: any) => w.role === 'rt' && clean(w.rt) === clean(user.rt) && !w.jabatan?.toLowerCase().includes('ketua'));
+
+          setRtChair({
+             rw: rw_chair,
+             rw_staff: rw_staff,
+             rt: rt_chair,
+             rt_staff: rt_staff
+          });
         } catch (err) {
           console.error(err);
         } finally {
@@ -80,10 +98,10 @@ export default function WargaDashboard() {
           <div>
             <div className="flex items-center gap-3 mb-2">
                <span className="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase rounded-full border border-indigo-500/20">Warga Terverifikasi</span>
-               <span className="text-slate-600 text-xs font-mono">ID: {user.id.slice(0,8)}</span>
+               <span className="text-slate-600 text-xs font-mono">ID: {user?.id?.slice(0,8) || '...'}</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-              Selamat Datang, <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">{user.nama.split(' ')[0]}</span>
+               Selamat Datang, <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">{(user?.nama || 'Warga').split(' ')[0]}</span>
             </h1>
           </div>
           
@@ -152,34 +170,63 @@ export default function WargaDashboard() {
           </div>
 
           <div className="space-y-10">
-            {/* Info Wilayah Card */}
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[40px] p-8 shadow-2xl relative overflow-hidden group">
-               <div className="absolute -right-6 -bottom-6 text-white opacity-10 group-hover:rotate-12 transition-transform duration-700">
-                  <span className="text-[150px]">🏠</span>
+            {/* Info Struktur Pengurus Card */}
+            <div className="bg-slate-800/40 backdrop-blur-xl rounded-[40px] p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+               <div className="absolute -right-6 -bottom-6 text-white opacity-5 group-hover:rotate-12 transition-transform duration-700">
+                  <span className="text-[150px]">🏛️</span>
                </div>
                <div className="relative z-10">
-                 <h3 className="text-2xl font-black text-white mb-6">Info Wilayah</h3>
+                 <h3 className="text-xl font-black text-white mb-6 uppercase tracking-tighter italic">Struktur <span className="text-indigo-400">Pengurus</span></h3>
+                 
                  <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-xl">👤</div>
-                       <div>
-                          <p className="text-indigo-100/50 text-[10px] font-bold uppercase">Ketua RT {user.rt}</p>
-                          <p className="text-white font-black">{rtChair?.nama || 'Belum Terdata'}</p>
+                    {/* RW Level */}
+                    <div className="space-y-4">
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Tingkat RW {user.rw}</p>
+                       <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-lg shadow-lg shadow-indigo-900/40">👑</div>
+                          <div>
+                             <p className="text-white font-bold text-sm">{rtChair?.rw?.nama || 'Ketua RW Belum Terdata'}</p>
+                             <p className="text-[9px] text-indigo-400 font-bold uppercase">Ketua RW</p>
+                          </div>
                        </div>
+                       {rtChair?.rw_staff && (
+                          <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 ml-4">
+                             <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center text-lg">📋</div>
+                             <div>
+                                <p className="text-white font-bold text-sm">{rtChair.rw_staff.nama}</p>
+                                <p className="text-[9px] text-slate-500 font-bold uppercase">{rtChair.rw_staff.jabatan || 'Staff RW'}</p>
+                             </div>
+                          </div>
+                       )}
                     </div>
-                    <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-xl">🏢</div>
-                       <div>
-                          <p className="text-indigo-100/50 text-[10px] font-bold uppercase">Wilayah Administrasi</p>
-                          <p className="text-white font-black">RW {user.rw}</p>
+
+                    {/* RT Level */}
+                    <div className="space-y-4 mt-8">
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Tingkat RT {user.rt}</p>
+                       <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                          <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-lg shadow-lg shadow-purple-900/40">👤</div>
+                          <div>
+                             <p className="text-white font-bold text-sm">{rtChair?.rt?.nama || 'Ketua RT Belum Terdata'}</p>
+                             <p className="text-[9px] text-purple-400 font-bold uppercase">Ketua RT</p>
+                          </div>
                        </div>
+                       {rtChair?.rt_staff && (
+                          <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 ml-4">
+                             <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center text-lg">🔧</div>
+                             <div>
+                                <p className="text-white font-bold text-sm">{rtChair.rt_staff.nama}</p>
+                                <p className="text-[9px] text-slate-500 font-bold uppercase">{rtChair.rt_staff.jabatan || 'Staff RT'}</p>
+                             </div>
+                          </div>
+                       )}
                     </div>
                  </div>
+
                  <button 
                   onClick={() => setShowContact(true)}
-                  className="w-full mt-10 bg-white text-indigo-700 font-black py-4 rounded-2xl shadow-xl hover:scale-[1.02] transition active:scale-95 uppercase tracking-widest text-xs"
+                  className="w-full mt-10 bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-indigo-500 transition active:scale-95 uppercase tracking-widest text-[10px]"
                  >
-                   Hubungi Pengurus
+                   Lihat Detail Kontak
                  </button>
                </div>
             </div>
@@ -213,11 +260,19 @@ export default function WargaDashboard() {
                 👤
               </div>
               <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Hubungi Ketua RT</h3>
-              <p className="text-indigo-400 font-bold mb-8 uppercase tracking-widest text-[10px]">RT {user.rt} / RW {user.rw}</p>
+              <p className="text-indigo-400 font-bold mb-8 uppercase tracking-widest text-[10px]">RT {user?.rt || '-'} / RW {user?.rw || '-'}</p>
               
-              <div className="p-6 bg-white/5 rounded-3xl border border-white/5 mb-8">
-                <p className="text-slate-500 text-[10px] font-bold uppercase mb-1">Nama Pengurus</p>
-                <p className="text-white font-black text-lg">{rtChair?.nama || 'Petugas Wilayah'}</p>
+              <div className="p-6 bg-white/5 rounded-3xl border border-white/5 mb-8 text-left space-y-4">
+                <div>
+                  <p className="text-slate-500 text-[10px] font-bold uppercase mb-1">Ketua RT {user.rt}</p>
+                  <p className="text-white font-bold">{rtChair?.rt?.nama || 'N/A'}</p>
+                  <p className="text-[10px] text-indigo-400 font-mono">{rtChair?.rt?.no_telp}</p>
+                </div>
+                <div className="pt-4 border-t border-white/5">
+                  <p className="text-slate-500 text-[10px] font-bold uppercase mb-1">Ketua RW {user.rw}</p>
+                  <p className="text-white font-bold">{rtChair?.rw?.nama || 'N/A'}</p>
+                  <p className="text-[10px] text-indigo-400 font-mono">{rtChair?.rw?.no_telp}</p>
+                </div>
               </div>
 
               <div className="space-y-4">

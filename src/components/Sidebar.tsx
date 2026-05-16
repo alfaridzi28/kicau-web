@@ -4,7 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import packageJson from '../../package.json';
 
 interface SidebarProps {
-  user: { nama: string; role: string; rt?: string; rw?: string };
+  user: { nama: string; role: string; rt?: string; rw?: string; jabatan?: string; effective_role?: string };
   onLogout: () => void;
 }
 
@@ -12,6 +12,7 @@ const menuByRole: Record<string, { label: string; icon: string; href: string }[]
   lurah: [
     { label: 'Dashboard', icon: '📊', href: '/dashboard/lurah' },
     { label: 'Data Warga', icon: '👥', href: '/dashboard/lurah/warga' },
+    { label: 'Manajemen Staff', icon: '👔', href: '/dashboard/lurah/staff' },
     { label: 'Bansos', icon: '🤝', href: '/dashboard/lurah/bansos' },
     { label: 'Aset Wilayah', icon: '🏪', href: '/dashboard/lurah/aset' },
     { label: 'Aduan Warga', icon: '📢', href: '/dashboard/lurah/aduan' },
@@ -77,12 +78,11 @@ const roleColors: Record<string, string> = {
 };
 
 const roleLabel: Record<string, string> = {
-  lurah: '🏛️ Lurah',
+  lurah: 'Kelurahan',
   superadmin: '⚙️ Superadmin',
-  rw: '🏘️ Ketua RW',
-  rt: '🏠 Ketua RT',
+  rw: 'Wilayah RW',
+  rt: 'Wilayah RT',
   warga: '👤 Warga',
-  staff: '📋 Staff',
 };
 
 export default function Sidebar({ user, onLogout }: SidebarProps) {
@@ -95,6 +95,8 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   // Tentukan menu berdasarkan role aktif
   const menu = menuByRole[roleToUse as keyof typeof menuByRole] || menuByRole.warga;
   const gradient = roleColors[roleToUse] || roleColors['warga'];
+
+  console.log("Sidebar render:", { user, roleToUse, hasMenu: !!menuByRole[roleToUse as keyof typeof menuByRole] });
 
   const isActive = (href: string) => {
     if (pathname === href) return true;
@@ -123,7 +125,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-white font-bold text-sm leading-tight truncate">{user.nama}</p>
-            <p className="text-white/60 text-xs">{roleLabel[user.role] || user.role}</p>
+            <p className="text-white/60 text-xs truncate">{user.jabatan || roleLabel[user.role] || user.role}</p>
           </div>
         </div>
         {(user.rt || user.rw) && (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
 import Sidebar from '@/components/Sidebar';
+import StatCard from '@/components/StatCard';
 import ExportButton from '@/components/ExportButton';
 
 export default function RTWargaPage() {
@@ -13,28 +14,42 @@ export default function RTWargaPage() {
   const [selectedWarga, setSelectedWarga] = useState<any>(null);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  
+  // Stats
+  const [stats, setStats] = useState({ miskin: 0, hamil: 0, balita: 0 });
+
   const [formData, setFormData] = useState({
     nama: '',
     nik: '',
     nomor_kk: '',
     alamat: '',
+    no_telp: '',
     is_fakir: false,
     is_miskin: false,
     is_ibu_hamil: false,
     is_balita: false,
   });
+  
   const limit = 10;
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const skip = (page - 1) * limit;
-      const endpoint = user?.role === 'rw' 
-        ? `/warga?rw=${user.rw}&skip=${skip}&limit=${limit}` 
-        : `/warga?rt=${user?.rt}&rw=${user?.rw}&skip=${skip}&limit=${limit}`;
-      const data = await apiFetch(endpoint);
-      setWarga(data.items.filter((w: any) => w.role === 'warga'));
-      setTotal(data.total);
+      const endpoint = `/warga?rt=${user?.rt}&rw=${user?.rw}&search=${search}&skip=${skip}&limit=${limit}`;
+      const res = await apiFetch(endpoint);
+      setWarga(res.items || []);
+      setTotal(res.total || 0);
+
+      // Fetch stats (simplified for now)
+      const allRes = await apiFetch(`/warga?rt=${user?.rt}&rw=${user?.rw}&limit=1000`);
+      const allItems = allRes.items || [];
+      setStats({
+        miskin: allItems.filter((w: any) => w.is_miskin || w.is_fakir).length,
+        hamil: allItems.filter((w: any) => w.is_ibu_hamil).length,
+        balita: allItems.filter((w: any) => w.is_balita).length
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -44,9 +59,7 @@ export default function RTWargaPage() {
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user, page]);
-
-  const totalPages = Math.ceil(total / limit);
+  }, [user, page, search]);
 
   const handleOpenModal = (w?: any) => {
     if (w) {
@@ -56,6 +69,7 @@ export default function RTWargaPage() {
         nik: w.nik,
         nomor_kk: w.nomor_kk || '',
         alamat: w.alamat || '',
+        no_telp: w.no_telp || '',
         is_fakir: w.is_fakir,
         is_miskin: w.is_miskin,
         is_ibu_hamil: w.is_ibu_hamil,
@@ -68,6 +82,7 @@ export default function RTWargaPage() {
         nik: '',
         nomor_kk: '',
         alamat: '',
+        no_telp: '',
         is_fakir: false,
         is_miskin: false,
         is_ibu_hamil: false,
@@ -114,155 +129,202 @@ export default function RTWargaPage() {
   return (
     <div className="flex min-h-screen bg-[#0f172a] text-slate-200">
       <Sidebar user={user} onLogout={logout} />
-      <main className="flex-1 p-8 overflow-auto">
-        <header className="mb-10 flex justify-between items-start">
+      <main className="flex-1 p-8 overflow-auto relative">
+        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-indigo-600/5 to-transparent -z-10"></div>
+
+        <header className="mb-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 animate-in fade-in slide-in-from-left duration-700">
           <div>
-            <h1 className="text-4xl font-extrabold text-white">Kelola Warga RT {user.rt}</h1>
-            <p className="text-slate-400 mt-1 uppercase text-[10px] font-black tracking-widest">Total {total} Warga • Halaman {page} dari {totalPages || 1}</p>
+            <div className="flex items-center gap-3 mb-1">
+               <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase">Kelola <span className="text-indigo-400">Warga RT {user.rt}</span></h1>
+               <span className="bg-indigo-500/20 text-indigo-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase border border-indigo-500/30 tracking-widest">Wilayah RW {user.rw}</span>
+            </div>
+            <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px]">Basis Data Kependudukan Digital • Monitoring Kesejahteraan</p>
           </div>
-          <div className="flex gap-4">
-            <ExportButton 
-              data={warga}
-              filename={`Warga_RT${user.rt}`}
-              columns={[
-                { key: 'nama', label: 'Nama' },
-                { key: 'nik', label: 'NIK' },
-                { key: 'nomor_kk', label: 'No. KK' },
-                { key: 'alamat', label: 'Alamat' }
-              ]}
-            />
-            <button 
-              onClick={() => handleOpenModal()}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-6 py-3 rounded-2xl shadow-lg transition flex items-center gap-2 uppercase text-[10px] tracking-widest"
-            >
-              <span>➕</span> Tambah Warga
-            </button>
+
+          <div className="flex flex-wrap items-center gap-4">
+             <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Cari Nama atau NIK..." 
+                  className="bg-slate-800/40 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-indigo-500/50 w-64 transition-all"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+             </div>
+
+             <button 
+               onClick={() => handleOpenModal()}
+               className="bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[10px] uppercase tracking-widest px-8 py-3.5 rounded-2xl shadow-xl shadow-indigo-900/40 transition-all active:scale-95 border border-indigo-500/50"
+             >
+                + Tambah Warga
+             </button>
+
+             <ExportButton 
+               data={warga}
+               filename={`Data_Warga_RT${user.rt}`}
+               columns={[
+                 { key: 'nama', label: 'Nama' },
+                 { key: 'nik', label: 'NIK' },
+                 { key: 'nomor_kk', label: 'No. KK' },
+                 { key: 'alamat', label: 'Alamat' }
+               ]}
+               label="Export XLSX"
+             />
           </div>
         </header>
 
-        <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/5 overflow-hidden shadow-2xl mb-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10 animate-in fade-in slide-in-from-bottom duration-500">
+           <StatCard title="Total Warga" value={total} icon="👥" color="indigo" subtitle="Warga Terdaftar" />
+           <StatCard title="Kurang Mampu" value={stats.miskin} icon="🆘" color="red" subtitle="Fakir & Miskin" />
+           <StatCard title="Ibu Hamil" value={stats.hamil} icon="🤰" color="pink" subtitle="Monitoring Kesehatan" />
+           <StatCard title="Balita" value={stats.balita} icon="👶" color="cyan" subtitle="Cek Stunting/Gizi" />
+        </div>
+
+        <div className="bg-slate-800/40 backdrop-blur-xl rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
           <table className="w-full text-left">
-            <thead className="bg-white/5 text-[10px] uppercase text-slate-500 font-bold">
+            <thead className="bg-white/5 text-[10px] uppercase text-slate-500 font-black tracking-[0.2em]">
               <tr>
-                <th className="p-5">Identitas Warga</th>
-                <th className="p-5">Informasi KK</th>
-                <th className="p-5">Status Sosial</th>
-                <th className="p-6 text-right">Aksi</th>
+                <th className="p-8">Identitas Warga</th>
+                <th className="p-8">Keluarga & Alamat</th>
+                <th className="p-8">Status Sosial</th>
+                <th className="p-8 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="text-sm">
               {loading ? (
-                <tr><td colSpan={4} className="p-20 text-center animate-pulse font-black text-slate-500 uppercase">Memuat Database...</td></tr>
+                <tr><td colSpan={4} className="p-20 text-center animate-pulse text-slate-500 font-black uppercase tracking-widest">Sinkronisasi Database Warga...</td></tr>
               ) : warga.length === 0 ? (
-                <tr><td colSpan={4} className="p-10 text-center text-slate-500 italic font-bold">Belum ada warga terdaftar di halaman ini.</td></tr>
+                <tr><td colSpan={4} className="p-20 text-center text-slate-600 italic font-bold uppercase tracking-widest">Tidak ada data warga ditemukan.</td></tr>
               ) : warga.map(w => (
-                <tr key={w.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="p-5">
-                    <p className="font-bold text-white">{w.nama}</p>
-                    <p className="text-xs text-slate-500 font-mono">{w.nik}</p>
-                  </td>
-                  <td className="p-5">
-                    <p className="text-xs text-slate-400">KK: {w.nomor_kk || '-'}</p>
-                    <p className="text-[10px] text-slate-500 line-clamp-1">{w.alamat || 'Alamat tidak diatur'}</p>
-                  </td>
-                  <td className="p-5">
-                    <div className="flex flex-wrap gap-1">
-                      {w.is_fakir && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 uppercase">Fakir</span>}
-                      {w.is_miskin && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 uppercase">Miskin</span>}
-                      {!w.is_fakir && !w.is_miskin && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-slate-700/20 text-slate-500 uppercase">Mampu</span>}
+                <tr key={w.id} className="border-b border-white/5 hover:bg-white/5 transition-all group">
+                  <td className="p-8">
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center text-xl shadow-inner">
+                          {w.foto ? <img src={w.foto} className="w-full h-full rounded-full object-cover" /> : "👤"}
+                       </div>
+                       <div>
+                          <p className="font-black text-white group-hover:text-indigo-400 transition-colors text-base uppercase tracking-tight">{w.nama}</p>
+                          <p className="text-[10px] text-slate-500 font-mono tracking-tighter">NIK: {w.nik}</p>
+                       </div>
                     </div>
                   </td>
-                  <td className="p-5 text-right space-x-3">
-                    <button onClick={() => handleOpenModal(w)} className="text-indigo-400 hover:text-indigo-300 font-bold text-xs transition">Edit</button>
-                    <button onClick={() => handleDelete(w.id)} className="text-red-400 hover:text-red-300 font-bold text-xs transition">Hapus</button>
+                  <td className="p-8">
+                    <p className="text-white font-bold text-xs uppercase tracking-widest">KK: {w.nomor_kk || '-'}</p>
+                    <p className="text-[10px] text-slate-500 italic mt-1 line-clamp-1">{w.alamat || 'Alamat belum diatur'}</p>
+                  </td>
+                  <td className="p-8">
+                    <div className="flex flex-wrap gap-2">
+                      {w.is_fakir && <span className="bg-red-500/10 text-red-400 text-[8px] px-2 py-1 rounded-lg border border-red-500/20 font-black uppercase">Fakir</span>}
+                      {w.is_miskin && <span className="bg-orange-500/10 text-orange-400 text-[8px] px-2 py-1 rounded-lg border border-orange-500/20 font-black uppercase">Miskin</span>}
+                      {w.is_ibu_hamil && <span className="bg-pink-500/10 text-pink-400 text-[8px] px-2 py-1 rounded-lg border border-pink-500/20 font-black uppercase">Hamil</span>}
+                      {w.is_balita && <span className="bg-blue-500/10 text-blue-400 text-[8px] px-2 py-1 rounded-lg border border-blue-500/20 font-black uppercase">Balita</span>}
+                      {!w.is_fakir && !w.is_miskin && !w.is_ibu_hamil && !w.is_balita && <span className="bg-emerald-500/10 text-emerald-400 text-[8px] px-2 py-1 rounded-lg border border-emerald-500/20 font-black uppercase">Sehat/Mampu</span>}
+                    </div>
+                  </td>
+                  <td className="p-8 text-right">
+                    <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                       <button 
+                         onClick={() => handleOpenModal(w)}
+                         className="bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white font-black text-[9px] uppercase tracking-widest px-4 py-2 rounded-xl border border-indigo-500/20 transition-all"
+                       >
+                         Edit
+                       </button>
+                       <button 
+                         onClick={() => handleDelete(w.id)}
+                         className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white font-black text-[9px] uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all"
+                       >
+                         Hapus
+                       </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          
+          {/* Pagination */}
+          {total > limit && (
+            <div className="p-8 border-t border-white/5 flex items-center justify-between bg-white/5">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Halaman {page} dari {Math.ceil(total / limit)}</p>
+              <div className="flex gap-3">
+                 <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-2.5 rounded-xl bg-slate-800 text-white disabled:opacity-20 font-black text-[10px] uppercase transition-all">Sebelumnya</button>
+                 <button onClick={() => setPage(p => Math.min(Math.ceil(total/limit), p + 1))} disabled={page === Math.ceil(total/limit)} className="px-6 py-2.5 rounded-xl bg-slate-800 text-white disabled:opacity-20 font-black text-[10px] uppercase transition-all">Berikutnya</button>
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3 py-4">
-             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase border border-white/5">← Prev</button>
-             <div className="flex gap-2 text-white font-black text-xs">
-                {page} / {totalPages}
-             </div>
-             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase border border-white/5">Next →</button>
-          </div>
-        )}
 
         {/* Modal Form */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-2xl p-8 shadow-2xl overflow-auto max-h-[90vh]">
-              <h2 className="text-2xl font-bold text-white mb-6">{selectedWarga ? 'Update Data Warga' : 'Tambah Warga Baru'}</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Nama Lengkap</label>
-                    <input 
-                      className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                      value={formData.nama}
-                      onChange={(e) => setFormData({...formData, nama: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">NIK</label>
-                    <input 
-                      className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                      value={formData.nik}
-                      onChange={(e) => setFormData({...formData, nik: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Nomor KK</label>
-                    <input 
-                      className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                      value={formData.nomor_kk}
-                      onChange={(e) => setFormData({...formData, nomor_kk: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Alamat Lengkap</label>
-                    <input 
-                      className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                      value={formData.alamat}
-                      onChange={(e) => setFormData({...formData, alamat: e.target.value})}
-                    />
-                  </div>
-                </div>
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-6 z-50">
+            <div className="bg-slate-900 border border-white/10 rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in duration-300 max-h-[95vh] flex flex-col">
+               <div className="p-10 overflow-y-auto">
+                  <h2 className="text-3xl font-black text-white mb-8 tracking-tighter italic uppercase">{selectedWarga ? 'Update Data Warga' : 'Registrasi Warga Baru'}</h2>
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                       <div className="space-y-6">
+                          <div className="space-y-2">
+                             <label className="text-[10px] font-black text-slate-500 uppercase px-1">Nama Lengkap</label>
+                             <input required className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner" value={formData.nama} onChange={e => setFormData({...formData, nama: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                             <label className="text-[10px] font-black text-slate-500 uppercase px-1">NIK (Nomor Induk Kependudukan)</label>
+                             <input required className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 shadow-inner font-mono" value={formData.nik} onChange={e => setFormData({...formData, nik: e.target.value})} />
+                          </div>
+                       </div>
+                       <div className="space-y-6">
+                          <div className="space-y-2">
+                             <label className="text-[10px] font-black text-slate-500 uppercase px-1">Nomor Kartu Keluarga</label>
+                             <input className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 shadow-inner font-mono" value={formData.nomor_kk} onChange={e => setFormData({...formData, nomor_kk: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                             <label className="text-[10px] font-black text-slate-500 uppercase px-1">Nomor Telepon / WA</label>
+                             <input className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 shadow-inner font-mono" placeholder="0812..." value={formData.no_telp} onChange={e => setFormData({...formData, no_telp: e.target.value})} />
+                          </div>
+                       </div>
+                    </div>
 
-                <div className="space-y-4">
-                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Status Ekonomi & Sosial</p>
-                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { label: 'Fakir', key: 'is_fakir' },
-                        { label: 'Miskin', key: 'is_miskin' },
-                        { label: 'Ibu Hamil', key: 'is_ibu_hamil' },
-                        { label: 'Balita', key: 'is_balita' },
-                      ].map(item => (
-                        <label key={item.key} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl cursor-pointer hover:bg-white/10 transition">
-                           <input 
-                            type="checkbox"
-                            checked={(formData as any)[item.key]}
-                            onChange={(e) => setFormData({...formData, [item.key]: e.target.checked})}
-                            className="w-4 h-4 rounded accent-indigo-500"
-                           />
-                           <span className="text-xs font-bold text-white">{item.label}</span>
-                        </label>
-                      ))}
-                   </div>
-                </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-500 uppercase px-1">Alamat Domisili</label>
+                       <textarea className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 h-24 shadow-inner" value={formData.alamat} onChange={e => setFormData({...formData, alamat: e.target.value})}></textarea>
+                    </div>
 
-                <div className="flex gap-4 pt-4">
-                  <button type="button" onClick={() => setShowModal(false)} className="flex-1 bg-slate-800 text-white font-bold py-3 rounded-2xl transition hover:bg-slate-700">Batal</button>
-                  <button type="submit" className="flex-1 bg-indigo-600 text-white font-bold py-3 rounded-2xl shadow-lg transition hover:bg-indigo-500">Simpan Perubahan</button>
-                </div>
-              </form>
+                    <div className="space-y-4">
+                       <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2">Status Khusus & Kesejahteraan</p>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {[
+                            { label: 'Fakir', key: 'is_fakir', color: 'red' },
+                            { label: 'Miskin', key: 'is_miskin', color: 'orange' },
+                            { label: 'Ibu Hamil', key: 'is_ibu_hamil', color: 'pink' },
+                            { label: 'Balita', key: 'is_balita', color: 'blue' },
+                          ].map(item => (
+                            <label key={item.key} className={`flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border ${
+                              (formData as any)[item.key] 
+                              ? `bg-indigo-600/20 border-indigo-500/50` 
+                              : 'bg-white/5 border-white/5 hover:border-white/10'
+                            }`}>
+                               <input 
+                                 type="checkbox"
+                                 checked={(formData as any)[item.key]}
+                                 onChange={(e) => setFormData({...formData, [item.key]: e.target.checked})}
+                                 className="w-5 h-5 rounded-lg accent-indigo-500"
+                               />
+                               <span className={`text-[10px] font-black uppercase ${(formData as any)[item.key] ? 'text-white' : 'text-slate-500'}`}>{item.label}</span>
+                            </label>
+                          ))}
+                       </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-6">
+                       <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 rounded-2xl text-slate-400 font-bold hover:bg-white/5 transition-all uppercase text-[10px] tracking-widest">Batal</button>
+                       <button type="submit" className="flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black uppercase tracking-widest shadow-lg shadow-indigo-900/40 transition-all active:scale-95">
+                          {selectedWarga ? 'Simpan Perubahan' : 'Registrasi Warga'}
+                       </button>
+                    </div>
+                  </form>
+               </div>
             </div>
           </div>
         )}

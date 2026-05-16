@@ -111,6 +111,7 @@ export default function LandingPage() {
       }
       // Simpan effective_role agar bisa dipakai oleh seluruh aplikasi
       data.user_info.effective_role = effectiveRole;
+      data.user_info.role = data.role; // Pastikan role juga tersimpan jika backend belum terupdate
 
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user_info));
@@ -303,14 +304,15 @@ export default function LandingPage() {
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { role: 'Superadmin', nik: '3215252801990001', color: 'border-purple-500/30 hover:bg-purple-500/10' },
-                  { role: 'RW', nik: '3215252801990002', color: 'border-emerald-500/30 hover:bg-emerald-500/10' },
-                  { role: 'RT', nik: '3215252801990003', color: 'border-cyan-500/30 hover:bg-cyan-500/10' },
-                  { role: 'Warga', nik: '3215252801990004', color: 'border-slate-500/30 hover:bg-slate-500/10' },
+                  { role: 'Lurah', nik: '3200000000000010', color: 'border-blue-500/30 hover:bg-blue-500/10' },
+                  { role: 'RW', nik: '3200000000000012', color: 'border-emerald-500/30 hover:bg-emerald-500/10' },
+                  { role: 'RT', nik: '3200000000000014', color: 'border-cyan-500/30 hover:bg-cyan-500/10' },
+                  { role: 'Warga', nik: '3215252801990003', color: 'border-slate-500/30 hover:bg-slate-500/10' },
                 ].map((acc) => (
                   <button
                     key={acc.nik}
                     type="button"
-                    onClick={() => { setNik(acc.nik); setPassword('password'); }}
+                    onClick={() => { setNik(acc.nik); setPassword('password123'); }}
                     className={`text-xs px-3 py-2 rounded-lg border ${acc.color} text-white/50 hover:text-white transition text-left`}
                   >
                     <span className="block font-semibold">{acc.role}</span>
@@ -318,7 +320,7 @@ export default function LandingPage() {
                   </button>
                 ))}
               </div>
-              <p className="text-white/20 text-[10px] text-center mt-2">Password: <code className="bg-white/10 px-1 rounded">password</code></p>
+              <p className="text-white/20 text-[10px] text-center mt-2">Password: <code className="bg-white/10 px-1 rounded">password123</code></p>
             </div>
           </div>
         </div>

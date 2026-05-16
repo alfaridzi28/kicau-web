@@ -12,8 +12,11 @@ export default function LurahWargaPage() {
   const [loading, setLoading] = useState(true);
   const [filterRT, setFilterRT] = useState('');
   const [filterRW, setFilterRW] = useState('');
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedWarga, setSelectedWarga] = useState<any>(null);
+  const [rwList, setRwList] = useState<string[]>([]);
+  const [rtList, setRtList] = useState<string[]>([]);
 
   const limit = 10;
 
@@ -21,19 +24,73 @@ export default function LurahWargaPage() {
     setLoading(true);
     try {
       const skip = (page - 1) * limit;
-      const data = await apiFetch(`/warga?rt=${filterRT}&rw=${filterRW}&skip=${skip}&limit=${limit}`);
-      setWarga(data.items);
-      setTotal(data.total);
+      // Ambil data warga dengan saringan lengkap
+      const query = `/warga?rt=${filterRT}&rw=${filterRW}&search=${search}&skip=${skip}&limit=${limit}`;
+      const res = await apiFetch(query);
+      
+      if (res && res.items) {
+        setWarga(res.items);
+        setTotal(res.total || 0);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Lurah Fetch Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleRoleChange = async (targetId: string, newRole: string) => {
+    let rtValue = selectedWarga.rt;
+    let rwValue = selectedWarga.rw;
+
+    if (newRole === 'rt') {
+      const num = prompt("Masukkan Nomor RT untuk jabatan baru ini (Contoh: 05):", rtValue || "");
+      if (num === null) return;
+      rtValue = num;
+    } else if (newRole === 'rw') {
+      const num = prompt("Masukkan Nomor RW untuk jabatan baru ini (Contoh: 02):", rwValue || "");
+      if (num === null) return;
+      rwValue = num;
+    }
+
+    if (!confirm(`Yakin ingin mengubah jabatan warga ini menjadi ${newRole.toUpperCase()} ${newRole === 'rt' ? 'RT ' + rtValue : newRole === 'rw' ? 'RW ' + rwValue : ''}?`)) return;
+    
+    try {
+      const jabatanValue = (newRole === 'rt' || newRole === 'rw') ? `Ketua` : 'Warga Biasa';
+      
+      await apiFetch(`/warga/${targetId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ 
+          role: newRole,
+          rt: rtValue,
+          rw: rwValue,
+          jabatan: jabatanValue
+        })
+      });
+      alert(`Jabatan berhasil diperbarui menjadi ${jabatanValue}`);
+      setSelectedWarga(null);
+      fetchData();
+    } catch (err: any) {
+      alert(err.message || "Gagal mengubah jabatan");
+    }
+  };
+
+  const fetchRegions = async () => {
+    try {
+      const data = await apiFetch('/stats/regions');
+      setRwList(data.rw_list);
+      setRtList(data.rt_list);
+    } catch (err) {
+      console.error("Gagal ambil wilayah:", err);
+    }
+  };
+
   useEffect(() => {
-    if (user) fetchData();
-  }, [user, filterRT, filterRW, page]);
+    if (user) {
+      fetchData();
+      fetchRegions();
+    }
+  }, [user, filterRT, filterRW, search, page]);
 
   const totalPages = Math.ceil(total / limit);
 
@@ -49,6 +106,16 @@ export default function LurahWargaPage() {
             <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Total {total} Warga • Halaman {page} dari {totalPages || 1}</p>
           </div>
           <div className="flex gap-4">
+             <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors">🔍</span>
+                <input 
+                  type="text"
+                  placeholder="Cari Nama atau NIK..."
+                  className="bg-slate-800/40 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:bg-slate-800 transition-all w-64 md:w-80"
+                  value={search}
+                  onChange={e => { setSearch(e.target.value); setPage(1); }}
+                />
+             </div>
              <ExportButton 
                data={warga}
                filename={`Data_Warga_Kelurahan`}
@@ -67,17 +134,17 @@ export default function LurahWargaPage() {
         <div className="flex gap-4 mb-8 bg-slate-800/40 p-4 rounded-3xl border border-white/5 backdrop-blur-xl">
            <div className="flex items-center gap-3">
               <label className="text-[10px] font-black text-slate-500 uppercase px-2">Filter RW:</label>
-              <select className="bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-xs text-white" value={filterRW} onChange={e => { setFilterRW(e.target.value); setPage(1); }}>
-                 <option value="">Semua RW</option>
-                 {['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'].map(r => <option key={r} value={r}>RW {r}</option>)}
-              </select>
-           </div>
-           <div className="flex items-center gap-3">
-              <label className="text-[10px] font-black text-slate-500 uppercase px-2">Filter RT:</label>
-              <select className="bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-xs text-white" value={filterRT} onChange={e => { setFilterRT(e.target.value); setPage(1); }}>
-                 <option value="">Semua RT</option>
-                 {['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'].map(r => <option key={r} value={r}>RT {r}</option>)}
-              </select>
+               <select className="bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-xs text-white" value={filterRW} onChange={e => { setFilterRW(e.target.value); setPage(1); }}>
+                  <option value="">Semua RW</option>
+                  {rwList.map(r => <option key={r} value={r}>RW {r}</option>)}
+               </select>
+            </div>
+            <div className="flex items-center gap-3">
+               <label className="text-[10px] font-black text-slate-500 uppercase px-2">Filter RT:</label>
+               <select className="bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-xs text-white" value={filterRT} onChange={e => { setFilterRT(e.target.value); setPage(1); }}>
+                  <option value="">Semua RT</option>
+                  {rtList.map(r => <option key={r} value={r}>RT {r}</option>)}
+               </select>
            </div>
         </div>
 
@@ -157,7 +224,7 @@ export default function LurahWargaPage() {
                       <div className="space-y-6">
                          <div>
                             <h2 className="text-3xl font-black text-white tracking-tighter mb-1">{selectedWarga.nama}</h2>
-                            <p className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">{selectedWarga.jabatan || 'Warga Biasa'}</p>
+                            <p className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">{selectedWarga.role?.toUpperCase() || 'Warga Biasa'}</p>
                          </div>
                          <div className="space-y-2">
                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Informasi Identitas</p>
@@ -203,6 +270,26 @@ export default function LurahWargaPage() {
                                {selectedWarga.is_fakir && <span className="bg-red-500/10 text-red-400 text-[9px] px-3 py-1.5 rounded-xl border border-red-500/20 font-black uppercase">Fakir</span>}
                                {selectedWarga.is_ibu_hamil && <span className="bg-pink-500/10 text-pink-400 text-[9px] px-3 py-1.5 rounded-xl border border-pink-500/20 font-black uppercase">Ibu Hamil</span>}
                                {selectedWarga.is_balita && <span className="bg-blue-500/10 text-blue-400 text-[9px] px-3 py-1.5 rounded-xl border border-blue-500/20 font-black uppercase">Balita</span>}
+                            </div>
+                         </div>
+
+                         <div className="pt-6 border-t border-white/5 space-y-4">
+                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">Otoritas Lurah: Manajemen Jabatan</p>
+                            <div className="flex flex-wrap gap-2">
+                               {['warga', 'rt', 'rw'].map(r => (
+                                  <button 
+                                    key={r}
+                                    onClick={() => handleRoleChange(selectedWarga.id, r)}
+                                    disabled={selectedWarga.role === r}
+                                    className={`flex-1 min-w-[80px] py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all border ${
+                                      selectedWarga.role === r 
+                                      ? 'bg-indigo-600/20 border-indigo-500/30 text-indigo-400 cursor-not-allowed' 
+                                      : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
+                                    }`}
+                                  >
+                                     Set {r}
+                                  </button>
+                               ))}
                             </div>
                          </div>
                       </div>

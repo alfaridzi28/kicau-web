@@ -12,7 +12,14 @@ export default function RWIuranPage() {
   const [activeTab, setActiveTab] = useState<'monitoring' | 'warga' | 'buku_kas' | 'input'>('monitoring');
   const [rekap, setRekap] = useState<any[]>([]);
   const [transaksi, setTransaksi] = useState<any[]>([]);
+  const [transaksiTotal, setTransaksiTotal] = useState(0);
+  const [sumPemasukan, setSumPemasukan] = useState(0);
+  const [sumPengeluaran, setSumPengeluaran] = useState(0);
+  const [transaksiPage, setTransaksiPage] = useState(1);
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterKategori, setFilterKategori] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const limit = 10;
   const [selectedRt, setSelectedRt] = useState<string | null>(null);
   const [unpaidWarga, setUnpaidWarga] = useState<any[]>([]);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -20,6 +27,7 @@ export default function RWIuranPage() {
   const [showSettingModal, setShowSettingModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [bulanTahun, setBulanTahun] = useState(new Date().toISOString().slice(0, 7));
 
   const handleSaveSignature = async (signatureData: string) => {
     try {
@@ -28,7 +36,6 @@ export default function RWIuranPage() {
         body: JSON.stringify({ tanda_tangan: signatureData })
       });
       
-      // Update local storage so the change reflects immediately after reload
       const updatedUser = { ...user, tanda_tangan: signatureData };
       localStorage.setItem('user', JSON.stringify(updatedUser));
       
@@ -37,6 +44,24 @@ export default function RWIuranPage() {
       window.location.reload(); 
     } catch (err: any) {
       alert(err.message || "Gagal menyimpan tanda tangan");
+    }
+  };
+
+  const handleDeleteSignature = async () => {
+    if (!confirm("Hapus tanda tangan Anda dari sistem?")) return;
+    try {
+      await apiFetch(`/warga/${user?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ tanda_tangan: null })
+      });
+      
+      const updatedUser = { ...user, tanda_tangan: null };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      alert("Tanda tangan berhasil dihapus");
+      window.location.reload();
+    } catch (err: any) {
+      alert(err.message || "Gagal menghapus tanda tangan");
     }
   };
 
@@ -57,15 +82,18 @@ export default function RWIuranPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const tSkip = (transaksiPage - 1) * limit;
       const [rekapData, settingData, transData] = await Promise.all([
-        apiFetch('/iuran/rt-to-rw-status'),
+        apiFetch(`/iuran/rt-to-rw-status?bulan_tahun=${bulanTahun}`),
         apiFetch(`/iuran-setting?rw=${user?.rw}`),
-        apiFetch('/iuran/transaksi')
+        apiFetch(`/iuran/transaksi?bulan_tahun=${bulanTahun}&skip=${tSkip}&limit=${limit}`)
       ]);
       setRekap(rekapData);
-      setTransaksi(transData);
-      const kasSetting = settingData.find((s: any) => s.rt === 'KAS_RW');
-      if (kasSetting) setNominalSetting(kasSetting.nominal);
+      setTransaksi(transData.items || []);
+      setTransaksiTotal(transData.total || 0);
+      setSumPemasukan(transData.sum_pemasukan || 0);
+      setSumPengeluaran(transData.sum_pengeluaran || 0);
+      if (settingData.length > 0) setNominalSetting(settingData[0].nominal);
     } catch (err) {
       console.error(err);
     } finally {
@@ -75,7 +103,7 @@ export default function RWIuranPage() {
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user, activeTab]);
+  }, [user, activeTab, bulanTahun, transaksiPage]);
 
   useEffect(() => {
     if (activeTab === 'warga' && filterRt) {
@@ -199,22 +227,34 @@ export default function RWIuranPage() {
           </div>
         </header>
 
-        {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-2 mb-8 bg-slate-800/40 p-2 rounded-2xl border border-white/5 w-fit">
-           {[
-             { id: 'monitoring', label: 'Monitor RT', icon: '📊' },
-             { id: 'warga', label: 'Iuran Warga', icon: '👥' },
-             { id: 'buku_kas', label: 'Buku Kas Umum', icon: '📖' },
-             { id: 'input', label: 'Transaksi RW', icon: '➕' },
-           ].map(tab => (
-             <button 
-               key={tab.id}
-               onClick={() => setActiveTab(tab.id as any)}
-               className={`px-5 py-2.5 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 uppercase tracking-widest ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
-             >
-                <span>{tab.icon}</span> {tab.label}
-             </button>
-           ))}
+        {/* Tab & Filter Navigation */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <div className="flex flex-wrap gap-2 bg-slate-800/40 p-2 rounded-2xl border border-white/5 w-fit">
+             {[
+               { id: 'monitoring', label: 'Monitor RT', icon: '📊' },
+               { id: 'warga', label: 'Iuran Warga', icon: '👥' },
+               { id: 'buku_kas', label: 'Buku Kas Umum', icon: '📖' },
+               { id: 'input', label: 'Transaksi RW', icon: '➕' },
+             ].map(tab => (
+               <button 
+                 key={tab.id}
+                 onClick={() => setActiveTab(tab.id as any)}
+                 className={`px-5 py-2.5 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 uppercase tracking-widest ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+               >
+                  <span>{tab.icon}</span> {tab.label}
+               </button>
+             ))}
+          </div>
+
+          <div className="bg-slate-800/40 p-2 rounded-2xl border border-white/5 flex items-center gap-3">
+             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-4 border-r border-white/10 whitespace-nowrap">Periode Laporan</label>
+             <input 
+               type="month" 
+               className="bg-transparent text-white font-black text-xs px-4 py-2 outline-none focus:text-blue-400 transition-colors"
+               value={bulanTahun}
+               onChange={(e) => setBulanTahun(e.target.value)}
+             />
+          </div>
         </div>
 
         {activeTab === 'monitoring' && (
@@ -355,14 +395,59 @@ export default function RWIuranPage() {
 
         {activeTab === 'buku_kas' && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+             {/* Summary Cards Buku Kas RW */}
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-[32px] backdrop-blur-md">
+                   <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Total Pemasukan RW</p>
+                   <p className="text-2xl font-black text-white">Rp {sumPemasukan.toLocaleString()}</p>
+                </div>
+                <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-[32px] backdrop-blur-md">
+                   <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Total Pengeluaran RW</p>
+                   <p className="text-2xl font-black text-white">Rp {sumPengeluaran.toLocaleString()}</p>
+                </div>
+                <div className="bg-blue-500/10 border border-blue-500/20 p-6 rounded-[32px] backdrop-blur-md">
+                   <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Saldo Kas RW</p>
+                   <p className="text-2xl font-black text-white">Rp {(sumPemasukan - sumPengeluaran).toLocaleString()}</p>
+                </div>
+             </div>
+
              <div className="bg-slate-800/40 backdrop-blur-md rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
-                <div className="p-8 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                   <h2 className="font-black text-white uppercase text-xs tracking-widest">Buku Kas Umum RW</h2>
+                <div className="p-8 border-b border-white/5 bg-white/5 flex flex-wrap justify-between items-center gap-4">
+                   <div className="flex flex-wrap items-center gap-4">
+                      <h2 className="font-black text-white uppercase text-xs tracking-widest mr-4">Buku Kas Umum RW</h2>
+                      
+                      <select 
+                        className="bg-slate-800 text-white text-[10px] font-black px-3 py-2 rounded-xl border border-white/10 outline-none focus:border-blue-500"
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value)}
+                      >
+                        <option value="all">Semua Tipe</option>
+                        <option value="pemasukan">Pemasukan</option>
+                        <option value="pengeluaran">Pengeluaran</option>
+                        <option value="iuran">Iuran Warga</option>
+                      </select>
+
+                      <select 
+                        className="bg-slate-800 text-white text-[10px] font-black px-3 py-2 rounded-xl border border-white/10 outline-none focus:border-blue-500"
+                        value={filterKategori}
+                        onChange={(e) => setFilterKategori(e.target.value)}
+                      >
+                        <option value="all">Semua Kategori</option>
+                        {Array.from(new Set(transaksi.map(t => t.kategori))).filter(k => k).map(k => (
+                          <option key={k} value={k}>{k}</option>
+                        ))}
+                      </select>
+                   </div>
+
                    <div className="flex gap-2">
-                     <button onClick={() => setShowReportModal(true)} className="bg-white text-slate-900 text-[10px] font-black px-4 py-2 rounded-xl uppercase">Buat Laporan</button>
+                     <button onClick={() => setShowReportModal(true)} className="bg-white text-slate-900 text-[10px] font-black px-4 py-2 rounded-xl uppercase transition hover:bg-blue-400 active:scale-95">Buat Laporan</button>
                      <ExportButton 
-                       data={transaksi}
-                       filename={`Laporan_Kas_RW${user.rw}`}
+                       data={transaksi.filter(t => {
+                         const matchType = filterType === 'all' || t.tipe === filterType;
+                         const matchKat = filterKategori === 'all' || t.kategori === filterKategori;
+                         return matchType && matchKat;
+                       })}
+                       filename={`Laporan_Kas_RW${user.rw}_${bulanTahun}`}
                        columns={[
                          { key: 'created_at', label: 'Tanggal' },
                          { key: 'tipe', label: 'Tipe' },
@@ -384,9 +469,17 @@ export default function RWIuranPage() {
                     </tr>
                   </thead>
                   <tbody className="text-sm">
-                    {transaksi.length === 0 ? (
-                      <tr><td colSpan={5} className="p-20 text-center text-slate-600 italic font-bold">Belum ada aktivitas keuangan yang dicatat.</td></tr>
-                    ) : transaksi.map(t => (
+                    {transaksi.filter(t => {
+                      const matchType = filterType === 'all' || t.tipe === filterType;
+                      const matchKat = filterKategori === 'all' || t.kategori === filterKategori;
+                      return matchType && matchKat;
+                    }).length === 0 ? (
+                      <tr><td colSpan={5} className="p-20 text-center text-slate-600 italic font-bold">Tidak ada aktivitas kas yang sesuai filter.</td></tr>
+                    ) : transaksi.filter(t => {
+                      const matchType = filterType === 'all' || t.tipe === filterType;
+                      const matchKat = filterKategori === 'all' || t.kategori === filterKategori;
+                      return matchType && matchKat;
+                    }).map(t => (
                       <tr key={t.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="p-6 text-slate-500 font-bold text-xs">{new Date(t.created_at).toLocaleDateString('id-ID')}</td>
                         <td className="p-6">
@@ -403,6 +496,17 @@ export default function RWIuranPage() {
                     ))}
                   </tbody>
                 </table>
+
+                {/* Pagination Controls Transaksi RW */}
+                {transaksiTotal > limit && (
+                  <div className="p-6 border-t border-white/5 flex items-center justify-between bg-white/5">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Halaman {transaksiPage} dari {Math.ceil(transaksiTotal / limit)}</p>
+                    <div className="flex gap-2">
+                       <button onClick={() => setTransaksiPage(p => Math.max(1, p - 1))} disabled={transaksiPage === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase">Prev</button>
+                       <button onClick={() => setTransaksiPage(p => Math.min(Math.ceil(transaksiTotal/limit), p + 1))} disabled={transaksiPage === Math.ceil(transaksiTotal/limit)} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase">Next</button>
+                    </div>
+                  </div>
+                )}
              </div>
           </div>
         )}
@@ -646,14 +750,22 @@ export default function RWIuranPage() {
 
               <div className="mt-12 flex gap-4 print:hidden">
                  <button onClick={() => setShowReportModal(false)} className="flex-1 py-4 bg-slate-100 text-slate-500 font-black rounded-2xl uppercase text-xs">Tutup</button>
-                 {user.tanda_tangan && <button 
-                    onClick={() => {
-                      setShowSignatureModal(true);
-                    }} 
-                    className="flex-1 py-4 bg-slate-800 text-white font-black rounded-2xl uppercase text-xs"
-                  >
-                    Ganti TTD
-                  </button>}
+                 {user.tanda_tangan && (
+                    <>
+                      <button 
+                        onClick={() => setShowSignatureModal(true)} 
+                        className="flex-1 py-4 bg-slate-800 text-white font-black rounded-2xl uppercase text-xs transition-all hover:bg-slate-700"
+                      >
+                        Ganti TTD
+                      </button>
+                      <button 
+                        onClick={handleDeleteSignature} 
+                        className="flex-1 py-4 bg-red-600/10 text-red-500 font-black rounded-2xl uppercase text-xs transition-all hover:bg-red-600 hover:text-white"
+                      >
+                        Hapus TTD
+                      </button>
+                    </>
+                  )}
                  <button onClick={() => window.print()} className="flex-1 py-4 bg-slate-900 text-white font-black rounded-2xl uppercase text-xs shadow-xl shadow-slate-900/40">Cetak Laporan</button>
               </div>
             </div>

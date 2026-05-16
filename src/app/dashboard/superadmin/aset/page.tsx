@@ -20,7 +20,7 @@ export default function SuperadminAsetPage() {
       if (filterRt) query.append('rt', filterRt);
       
       const data = await apiFetch(`/aset?${query.toString()}`);
-      setAset(data);
+      setAset(data.items || []);
     } catch (err) {
       console.error(err);
     } finally {

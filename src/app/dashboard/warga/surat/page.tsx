@@ -14,7 +14,7 @@ export default function WargaBuatSuratPage() {
   const fetchRiwayat = async () => {
     try {
       const data = await apiFetch('/surat');
-      setRiwayat(data);
+      setRiwayat(data.items || []);
     } catch (err) {
       console.error(err);
     }

@@ -47,7 +47,7 @@ export default function LurahDashboard() {
              <div className="bg-slate-800/40 backdrop-blur-xl p-5 rounded-[32px] border border-white/5 flex items-center gap-6 shadow-2xl">
                 <div className="text-right">
                    <p className="text-[9px] text-slate-500 font-black uppercase mb-1">Populasi Total</p>
-                   <p className="text-3xl font-black text-white leading-none">{stats.total_warga}</p>
+                   <p className="text-3xl font-black text-white leading-none">{stats?.total_warga || 0}</p>
                 </div>
                 <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-indigo-900/40">🏢</div>
              </div>
@@ -55,7 +55,7 @@ export default function LurahDashboard() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 animate-in fade-in slide-in-from-bottom duration-700">
-           <StatCard title="Warga Terdaftar" value={stats?.total_warga || 0} icon="👥" color="indigo" subtitle="Basis Data Kicau" />
+           <StatCard title="Jiwa Terdaftar" value={stats?.total_warga || 0} icon="👥" color="indigo" subtitle="Basis Data Kicau" />
            <StatCard title="Total Aduan" value={stats?.total_aduan || 0} icon="📢" color="orange" subtitle="Laporan Masuk" />
            <StatCard title="Penerima Bansos" value={stats?.total_bansos_penerima || 0} icon="🤝" color="purple" subtitle="Keluarga Terdata" />
            <StatCard title="Surat Diproses" value={stats?.total_surat || 0} icon="📄" color="cyan" subtitle="Bulan Berjalan" />
@@ -81,17 +81,19 @@ export default function LurahDashboard() {
                        <span className="text-xl">📊</span> Sebaran RW
                     </h3>
                     <div className="space-y-6">
-                       {Object.keys(stats?.warga_per_rt || {}).slice(0, 4).map(rt => (
-                         <div key={rt} className="space-y-2">
+                       {Object.keys(stats?.sebaran_rw || {}).length > 0 ? Object.keys(stats.sebaran_rw).map(rw => (
+                         <div key={rw} className="space-y-2">
                             <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
-                               <span>RW 0{rt}</span>
-                               <span className="text-indigo-400">{Math.floor(Math.random() * 100)}% Kontribusi</span>
+                               <span>RW {rw}</span>
+                               <span className="text-indigo-400">{stats.sebaran_rw[rw]} Jiwa</span>
                             </div>
                             <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                               <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${Math.random() * 100}%` }}></div>
+                               <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${(stats.sebaran_rw[rw] / stats.total_warga) * 100}%` }}></div>
                             </div>
                          </div>
-                       ))}
+                       )) : (
+                         <p className="text-xs text-slate-600 italic py-4">Data sebaran wilayah belum tersedia.</p>
+                       )}
                     </div>
                  </div>
                  <div className="bg-slate-800/40 backdrop-blur-xl rounded-[40px] p-10 border border-white/5 shadow-2xl">
@@ -100,10 +102,10 @@ export default function LurahDashboard() {
                     </h3>
                     <div className="flex flex-col items-center justify-center h-full pb-8">
                        <div className="w-32 h-32 rounded-full border-8 border-indigo-500/20 flex items-center justify-center relative">
-                          <div className="absolute inset-0 border-8 border-indigo-500 border-t-transparent rounded-full rotate-45"></div>
-                          <span className="text-3xl font-black text-white">88%</span>
+                          <div className="absolute inset-0 border-8 border-indigo-500 border-t-transparent rounded-full" style={{ transform: `rotate(${stats?.efektivitas_sosial * 3.6}deg)`, transition: 'transform 1.5s ease-out' }}></div>
+                          <span className="text-3xl font-black text-white">{stats?.efektivitas_sosial}%</span>
                        </div>
-                       <p className="text-[10px] font-black text-slate-500 uppercase mt-6 tracking-[0.2em]">Target Penyaluran Tercapai</p>
+                       <p className="text-[10px] font-black text-slate-500 uppercase mt-6 tracking-[0.2em]">Rasio Warga Terdata Bansos</p>
                     </div>
                  </div>
               </div>
@@ -137,7 +139,7 @@ export default function LurahDashboard() {
                  <div className="space-y-6">
                     <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
                        <p className="text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Waktu Server</p>
-                       <p className="text-sm font-bold text-indigo-300 font-mono">15-05-2026 21:45:00</p>
+                       <p className="text-sm font-bold text-indigo-300 font-mono">{stats?.server_time || 'Synchronizing...'}</p>
                     </div>
                     <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
                        <p className="text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Konektivitas</p>

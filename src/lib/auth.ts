@@ -14,6 +14,7 @@ export interface UserInfo {
   effective_role?: string;
   rt?: string;
   rw?: string;
+  jabatan?: string;
   tanda_tangan?: string;
 }
 
