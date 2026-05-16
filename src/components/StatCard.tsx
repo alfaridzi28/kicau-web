@@ -2,7 +2,7 @@ interface StatCardProps {
   title: string;
   value: string | number;
   icon: string;
-  color: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'cyan' | 'indigo' | 'emerald';
+  color: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'cyan' | 'indigo' | 'emerald' | 'pink';
   subtitle?: string;
   trend?: string;
 }
@@ -63,6 +63,13 @@ const colorMap = {
     icon: 'bg-emerald-500/20 text-emerald-400',
     title: 'text-emerald-400',
     value: 'text-emerald-100',
+  },
+  pink: {
+    bg: 'bg-pink-500/10',
+    border: 'border-pink-500/20',
+    icon: 'bg-pink-500/20 text-pink-400',
+    title: 'text-pink-400',
+    value: 'text-pink-100',
   },
 };
 
