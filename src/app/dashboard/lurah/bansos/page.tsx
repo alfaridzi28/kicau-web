@@ -24,8 +24,8 @@ export default function LurahBansosPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const skip = (page - 1) * limit;
-      let url = `/warga?bansos=true&rt=${filterRT}&rw=${filterRW}&search=${search}&skip=${skip}&limit=${limit}`;
+      
+      let url = `/warga?bansos=true&rt=${filterRT}&rw=${filterRW}&search=${search}&skip=$0&limit=$10000`;
       
       // Add category filter if selected
       if (filterCategory) {
@@ -240,5 +240,8 @@ export default function LurahBansosPage() {
     </div>
   );
 }
+
+
+
 
 

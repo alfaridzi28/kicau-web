@@ -7,6 +7,7 @@ import ExportButton from '@/components/ExportButton';
 
 export default function SuperadminBansosPage() {
   const { user, isLoading, logout } = useAuth();
+  const [allData, setAllData] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -17,12 +18,12 @@ export default function SuperadminBansosPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const skip = (page - 1) * limit;
+      
       // We fetch all but in production this should be a specific /bansos endpoint with pagination
       // For now we'll fetch paginated /warga and filter on client side or use a larger limit
       // Actually, it's better to fetch with a high limit for bansos if we don't have a backend filter
       // But let's try to be consistent.
-      const result = await apiFetch(`/warga?skip=${skip}&limit=${limit}`);
+      const result = await apiFetch('/warga?skip=0&limit=10000');
       
       // Note: This logic is tricky because pagination on /warga might hide recipients on other pages.
       // In a real system, the backend should have a /warga/bansos endpoint.
@@ -30,8 +31,8 @@ export default function SuperadminBansosPage() {
       const bansos = result.items.filter((w: any) => 
         w.is_fakir || w.is_miskin || w.is_ibu_hamil || w.is_balita
       );
-      setData(bansos);
-      setTotal(result.total);
+      setAllData(bansos);
+      setTotal(bansos.length);
     } catch (err) {
       console.error(err);
     } finally {
@@ -41,7 +42,11 @@ export default function SuperadminBansosPage() {
 
   useEffect(() => {
     if (user) fetchData();
-  }, [user, page]);
+  }, [user]);
+  useEffect(() => {
+    setData(allData.slice((page - 1) * limit, page * limit));
+  }, [allData, page]);
+
 
   const totalPages = Math.ceil(total / limit);
 
@@ -137,4 +142,7 @@ export default function SuperadminBansosPage() {
     </div>
   );
 }
+
+
+
 
