@@ -138,6 +138,15 @@ export default function RTBaganPage() {
             </div>
           </div>
         )}
+
+        {loading && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-center">
+             <div className="text-center">
+                <div className="w-16 h-16 border-t-4 border-cyan-500 rounded-full animate-spin mx-auto mb-8"></div>
+                <p className="text-slate-500 font-black uppercase tracking-[0.5em] text-xs">Menyusun Struktur...</p>
+             </div>
+          </div>
+        )}
       </main>
     </div>
   );

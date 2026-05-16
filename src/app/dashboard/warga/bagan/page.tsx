@@ -38,11 +38,18 @@ export default function WargaBaganPage() {
     if (w.role === 'rt') {
       const num = clean(w.rt);
       if (!rtGroups[num]) rtGroups[num] = { chair: null, staffs: [] };
-      if (w.jabatan?.toLowerCase().includes('ketua')) {
-          rtGroups[num].chair = w;
-      } else {
-          rtGroups[num].staffs.push(w);
-      }
+      rtGroups[num].staffs.push(w);
+    }
+  });
+
+  // Pick chairs
+  Object.keys(rtGroups).forEach(num => {
+    const group = rtGroups[num];
+    const chairIdx = group.staffs.findIndex(w => w.jabatan?.toLowerCase().includes('ketua'));
+    if (chairIdx >= 0) {
+       group.chair = group.staffs.splice(chairIdx, 1)[0];
+    } else if (group.staffs.length > 0) {
+       group.chair = group.staffs.shift(); // First one becomes chair
     }
   });
 

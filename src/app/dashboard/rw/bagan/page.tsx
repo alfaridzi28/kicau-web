@@ -77,8 +77,14 @@ export default function RWBaganPage() {
   if (isLoading || !user) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
   const rwStaff = warga.filter(w => w.role === 'rw' && w.jabatan !== 'Ketua' && w.id !== user.id);
-  const getRtChair = (rtNum: string) => warga.find(w => w.role === 'rt' && w.rt === rtNum && w.jabatan === 'Ketua');
-  const getRtStaff = (rtNum: string) => warga.filter(w => w.role === 'rt' && w.rt === rtNum && w.jabatan !== 'Ketua');
+  const getRtChair = (rtNum: string) => {
+    const rts = warga.filter(w => w.role === 'rt' && w.rt === rtNum);
+    return rts.find(w => w.jabatan?.toLowerCase().includes('ketua')) || rts[0];
+  };
+  const getRtStaff = (rtNum: string) => {
+    const chair = getRtChair(rtNum);
+    return warga.filter(w => w.role === 'rt' && w.rt === rtNum && w.id !== chair?.id);
+  };
 
   // Filter Warga untuk pencarian:
   // 1. Jika menunjuk Ketua RT, tampilkan warga yang belum punya role admin di RW tersebut
@@ -240,6 +246,15 @@ export default function RWBaganPage() {
                    <button onClick={() => setShowAddRtModal(false)} className="flex-1 py-4 text-slate-500 font-bold uppercase text-xs">Batal</button>
                    <button onClick={() => { setSelectedRt(manualRtInput); setModalType('rt_chair'); setShowAddRtModal(false); setShowModal(true); setManualRtInput(''); }} className="flex-1 bg-emerald-600 text-white font-black py-4 rounded-2xl text-[10px] uppercase">Lanjut</button>
                 </div>
+             </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-center">
+             <div className="text-center">
+                <div className="w-16 h-16 border-t-4 border-emerald-500 rounded-full animate-spin mx-auto mb-8"></div>
+                <p className="text-slate-500 font-black uppercase tracking-[0.5em] text-xs">Menyusun Struktur...</p>
              </div>
           </div>
         )}
