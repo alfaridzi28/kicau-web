@@ -46,7 +46,8 @@ export default function LandingPage() {
         const data = await res.json();
         setBerita(data.pemberitahuan || []);
         if (data.detected_region) {
-          setLocInfo(`📍 Terdeteksi di wilayah RT ${data.detected_region.rt} / RW ${data.detected_region.rw}`);
+          const rtText = data.detected_region.rt ? `RT ${data.detected_region.rt} / ` : '';
+          setLocInfo(`📍 Terdeteksi di wilayah ${rtText}RW ${data.detected_region.rw}`);
         } else if (lat && lng) {
           setLocInfo('📍 Lokasi Anda terdeteksi, namun belum ada info RT/RW spesifik');
         }
