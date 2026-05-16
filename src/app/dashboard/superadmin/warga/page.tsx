@@ -14,7 +14,7 @@ export default function SuperadminWargaPage() {
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    nik: '', nama: '', nomor_kk: '', rt: '', rw: '', role: 'warga', no_telp: '', foto: ''
+    nik: '', nama: '', nomor_kk: '', rt: '', rw: '', role: 'warga', no_telp: '', foto: '', latitude: '' as string | number, longitude: '' as string | number
   });
 
   const limit = 10;
@@ -58,12 +58,16 @@ export default function SuperadminWargaPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const payload: any = { ...formData };
+      if (payload.latitude === '') payload.latitude = null;
+      if (payload.longitude === '') payload.longitude = null;
+
       await apiFetch('/warga', {
         method: 'POST',
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       setShowModal(false);
-      setFormData({ nik: '', nama: '', nomor_kk: '', rt: '', rw: '', role: 'warga', no_telp: '', foto: '' });
+      setFormData({ nik: '', nama: '', nomor_kk: '', rt: '', rw: '', role: 'warga', no_telp: '', foto: '', latitude: '', longitude: '' });
       fetchWarga();
       alert('User berhasil ditambahkan');
     } catch (err: any) {
@@ -248,6 +252,14 @@ export default function SuperadminWargaPage() {
                      <div>
                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Wilayah RW</label>
                         <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500" value={formData.rw} onChange={e => setFormData({...formData, rw: e.target.value})} />
+                     </div>
+                     <div>
+                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Latitude (Opsional)</label>
+                        <input type="number" step="any" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500" value={formData.latitude} onChange={e => setFormData({...formData, latitude: e.target.value ? parseFloat(e.target.value) : ''})} />
+                     </div>
+                     <div>
+                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Longitude (Opsional)</label>
+                        <input type="number" step="any" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-purple-500" value={formData.longitude} onChange={e => setFormData({...formData, longitude: e.target.value ? parseFloat(e.target.value) : ''})} />
                      </div>
                      <div className="col-span-full">
                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Level Akses (Role)</label>

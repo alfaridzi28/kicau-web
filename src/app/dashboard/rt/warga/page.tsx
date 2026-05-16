@@ -29,6 +29,8 @@ export default function RTWargaPage() {
     is_miskin: false,
     is_ibu_hamil: false,
     is_balita: false,
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
   
   const limit = 10;
@@ -80,6 +82,8 @@ export default function RTWargaPage() {
         is_miskin: w.is_miskin,
         is_ibu_hamil: w.is_ibu_hamil,
         is_balita: w.is_balita,
+        latitude: w.latitude || null,
+        longitude: w.longitude || null,
       });
     } else {
       setSelectedWarga(null);
@@ -93,7 +97,20 @@ export default function RTWargaPage() {
         is_miskin: false,
         is_ibu_hamil: false,
         is_balita: false,
+        latitude: null,
+        longitude: null,
       });
+
+      // Ambil lokasi RT saat ini untuk default lat long warga baru
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setFormData(prev => ({ ...prev, latitude: pos.coords.latitude, longitude: pos.coords.longitude }));
+          },
+          (err) => console.log("Gagal mengambil lokasi:", err),
+          { enableHighAccuracy: true }
+        );
+      }
     }
     setShowModal(true);
   };
@@ -296,6 +313,23 @@ export default function RTWargaPage() {
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-slate-500 uppercase px-1">Alamat Domisili</label>
                        <textarea className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 h-24 shadow-inner" value={formData.alamat} onChange={e => setFormData({...formData, alamat: e.target.value})}></textarea>
+                    </div>
+
+                    {/* Indikator Lokasi */}
+                    <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
+                       <div>
+                          <p className="text-[10px] font-black text-slate-500 uppercase">Titik Koordinat (Otomatis)</p>
+                          {formData.latitude && formData.longitude ? (
+                             <p className="text-xs text-indigo-400 font-mono mt-1">
+                                Lat: {formData.latitude.toFixed(6)}, Lng: {formData.longitude.toFixed(6)}
+                             </p>
+                          ) : (
+                             <p className="text-xs text-orange-400 font-mono mt-1 italic animate-pulse">
+                                Mendeteksi lokasi GPS...
+                             </p>
+                          )}
+                       </div>
+                       <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-xl">📍</div>
                     </div>
 
                     <div className="space-y-4">
