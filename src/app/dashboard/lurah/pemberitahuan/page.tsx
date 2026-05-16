@@ -97,14 +97,12 @@ export default function LurahPemberitahuanPage() {
                   onChange={e => setSearch(e.target.value)}
                 />
              </div>
-             {activeTab === 'siaran' && (
-               <button 
+             <button 
                  onClick={() => setShowModal(true)}
                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-14 py-6 rounded-[32px] shadow-[0_0_50px_rgba(79,70,229,0.3)] transition-all active:scale-95 uppercase tracking-widest text-[12px] flex items-center gap-4 border border-indigo-400/30"
                >
                  <span className="text-3xl">📢</span> Siarkan Ke Seluruh Warga
                </button>
-             )}
           </div>
         </header>
 
@@ -145,9 +143,7 @@ export default function LurahPemberitahuanPage() {
                 <p className="text-slate-600 font-black uppercase tracking-widest text-base max-w-lg">
                    {activeTab === 'masuk' ? 'Belum ada warta masuk dari administrator pusat.' : 'Belum ada siaran resmi kelurahan yang diterbitkan hari ini.'}
                 </p>
-                {activeTab === 'siaran' && (
-                  <button onClick={() => setShowModal(true)} className="text-indigo-400 font-black text-xs uppercase tracking-widest hover:underline transition-all underline-offset-[12px] decoration-2">Terbitkan Maklumat Kelurahan</button>
-                )}
+                <button onClick={() => setShowModal(true)} className="text-indigo-400 font-black text-xs uppercase tracking-widest hover:underline transition-all underline-offset-[12px] decoration-2">Terbitkan Maklumat Kelurahan</button>
              </div>
            ) : filteredNews.map((item) => (
              <div key={item.id} className="bg-slate-800/40 backdrop-blur-3xl p-14 rounded-[64px] border border-white/5 hover:border-indigo-500/40 transition-all group relative flex flex-col h-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] animate-in fade-in slide-in-from-bottom duration-1000">
@@ -275,5 +271,6 @@ export default function LurahPemberitahuanPage() {
     </div>
   );
 }
+
 
 

@@ -97,14 +97,12 @@ export default function RWPemberitahuanPage() {
                   onChange={e => setSearch(e.target.value)}
                 />
              </div>
-             {activeTab === 'siaran' && (
-               <button 
+             <button 
                  onClick={() => setShowModal(true)}
                  className="bg-purple-600 hover:bg-purple-500 text-white font-black px-12 py-5 rounded-[24px] shadow-2xl shadow-purple-900/40 transition-all active:scale-95 uppercase tracking-widest text-[11px] flex items-center gap-3 border border-purple-500/50"
                >
                  <span className="text-2xl">📢</span> Siarkan Ke Wilayah
                </button>
-             )}
           </div>
         </header>
 
@@ -145,9 +143,7 @@ export default function RWPemberitahuanPage() {
                 <p className="text-slate-600 font-black uppercase tracking-widest text-sm max-w-md">
                    {activeTab === 'masuk' ? 'Belum ada instruksi resmi masuk dari Kelurahan.' : 'Anda belum menerbitkan siaran wilayah untuk seluruh RT & Warga.'}
                 </p>
-                {activeTab === 'siaran' && (
-                  <button onClick={() => setShowModal(true)} className="text-purple-400 font-black text-[10px] uppercase tracking-widest hover:underline transition-all underline-offset-8">Terbitkan Siaran Pertama</button>
-                )}
+                <button onClick={() => setShowModal(true)} className="text-purple-400 font-black text-[10px] uppercase tracking-widest hover:underline transition-all underline-offset-8">Terbitkan Siaran Pertama</button>
              </div>
            ) : filteredNews.map((item) => (
              <div key={item.id} className="bg-slate-800/30 backdrop-blur-2xl p-12 rounded-[56px] border border-white/5 hover:border-purple-500/30 transition-all group relative flex flex-col h-full shadow-2xl animate-in fade-in slide-in-from-bottom duration-700">
@@ -277,5 +273,6 @@ export default function RWPemberitahuanPage() {
     </div>
   );
 }
+
 
 

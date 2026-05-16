@@ -145,11 +145,13 @@ export default function RTAduanPage() {
                     onChange={(e) => setBalasan(e.target.value)}
                   ></textarea>
                 </div>
+                {statusUpdate === "selesai" && (
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Foto Bukti Selesai</label>
                   <input type="file" onChange={handleUpload} className="text-xs text-slate-400" />
                   {fotoSelesai && <img src={fotoSelesai} className="mt-4 w-32 h-32 object-cover rounded-xl" />}
                 </div>
+                )}
                 <div className="flex gap-4 pt-4">
                   <button onClick={() => setSelectedAduan(null)} className="flex-1 bg-slate-800 text-white font-bold py-3 rounded-2xl">Batal</button>
                   <button onClick={handleProcessAduan} className="flex-1 bg-indigo-600 text-white font-bold py-3 rounded-2xl">Simpan</button>
@@ -162,4 +164,5 @@ export default function RTAduanPage() {
     </div>
   );
 }
+
 
