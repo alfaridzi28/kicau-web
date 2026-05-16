@@ -16,6 +16,8 @@ export interface UserInfo {
   rw?: string;
   jabatan?: string;
   tanda_tangan?: string;
+  kecamatan?: string;
+  desa_kelurahan?: string;
 }
 
 export function useAuth() {
