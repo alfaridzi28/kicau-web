@@ -92,7 +92,7 @@ export default function RTPemberitahuanPage() {
                 <input 
                   type="text"
                   placeholder="Cari arsip informasi..."
-                  className="bg-slate-800/40 border border-white/5 rounded-[24px] py-4 pl-14 pr-8 text-sm text-white focus:outline-none focus:border-cyan-500/50 w-72 md:w-96 transition-all shadow-inner backdrop-blur-md"
+                  className="bg-slate-800/40 border border-white/5 rounded-[24px] py-4 pl-14 pr-8 text-sm text-white focus:outline-none focus:border-cyan-500/50 w-full md:w-96 transition-all shadow-inner backdrop-blur-md"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                 />
@@ -151,7 +151,7 @@ export default function RTPemberitahuanPage() {
              </div>
            ) : filteredNews.map((item) => (
              <div key={item.id} className="bg-slate-800/30 backdrop-blur-2xl p-12 rounded-[56px] border border-white/5 hover:border-cyan-500/30 transition-all group relative flex flex-col h-full shadow-2xl animate-in fade-in slide-in-from-bottom duration-700">
-                <div className="mb-8 flex justify-between items-center">
+                <div className="mb-8 flex justify-between flex-wrap gap-y-4 items-center">
                    <span className={`text-[10px] font-black px-5 py-2 rounded-xl uppercase tracking-widest border shadow-lg ${
                      item.scope === 'global' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 
                      item.scope === 'rw' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
@@ -172,7 +172,7 @@ export default function RTPemberitahuanPage() {
                    Baca Detail Warta <span className="group-hover:translate-x-2 transition-transform">→</span>
                 </button>
 
-                <div className="mt-auto pt-10 border-t border-white/5 flex justify-between items-center">
+                <div className="mt-auto pt-10 border-t border-white/5 flex justify-between flex-wrap gap-y-4 items-center">
                    <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-slate-900 border border-white/5 shadow-inner">
                          🗓️
@@ -201,7 +201,7 @@ export default function RTPemberitahuanPage() {
           <div className="fixed inset-0 bg-[#020617]/98 backdrop-blur-3xl flex items-center justify-center p-6 z-[2500]">
              <div className="bg-[#0f172a] border border-white/10 rounded-[64px] w-full max-w-4xl overflow-hidden shadow-[0_0_150px_rgba(34,211,238,0.2)] animate-in zoom-in duration-500 flex flex-col max-h-[85vh]">
                 <div className="p-16 overflow-y-auto">
-                   <div className="mb-12 flex justify-between items-start">
+                   <div className="mb-12 flex justify-between flex-wrap gap-y-4 items-start">
                       <div className="flex gap-4">
                         <span className="text-[11px] font-black px-6 py-2.5 rounded-2xl uppercase tracking-widest border bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
                            📢 Warta Digital RT {user.rt}
@@ -218,7 +218,7 @@ export default function RTPemberitahuanPage() {
                       {selectedNews.isi}
                    </div>
                 </div>
-                <div className="p-12 bg-slate-950/80 border-t border-white/5 flex justify-between items-center mt-auto backdrop-blur-md">
+                <div className="p-12 bg-slate-950/80 border-t border-white/5 flex justify-between flex-wrap gap-y-4 items-center mt-auto backdrop-blur-md">
                    <div className="flex items-center gap-6">
                       <div className="w-14 h-14 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center text-2xl">🏛️</div>
                       <div className="flex flex-col">
@@ -236,7 +236,7 @@ export default function RTPemberitahuanPage() {
         {showModal && (
           <div className="fixed inset-0 bg-[#020617]/98 backdrop-blur-2xl flex items-center justify-center p-6 z-[2000]">
             <div className="bg-[#0f172a] border border-white/10 rounded-[56px] w-full max-w-3xl p-16 shadow-[0_0_120px_rgba(34,211,238,0.15)] animate-in zoom-in duration-500">
-               <div className="flex justify-between items-start mb-12">
+               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-12">
                   <div>
                      <h2 className="text-5xl font-black text-white tracking-tighter italic uppercase">Siaran Baru <span className="text-cyan-400">RT {user.rt}</span></h2>
                      <p className="text-slate-500 text-[11px] font-bold uppercase tracking-[0.3em] mt-2 ml-1">Publikasi Informasi Internal Warga</p>
@@ -279,3 +279,5 @@ export default function RTPemberitahuanPage() {
     </div>
   );
 }
+
+

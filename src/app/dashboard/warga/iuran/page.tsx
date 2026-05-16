@@ -41,7 +41,7 @@ export default function WargaIuranPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
-              <div className="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+              <div className="p-6 border-b border-white/5 bg-white/5 flex justify-between flex-wrap gap-y-4 items-center">
                  <h2 className="font-bold text-white uppercase text-xs tracking-widest">Riwayat Pembayaran</h2>
                  <span className="text-[10px] text-slate-500">{iuran.length} Transaksi Terdeteksi</span>
               </div>
@@ -138,3 +138,4 @@ export default function WargaIuranPage() {
     </div>
   );
 }
+

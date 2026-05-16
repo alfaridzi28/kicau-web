@@ -39,7 +39,7 @@ export default function LurahAduanPage() {
     <div className="flex min-h-screen bg-[#0f172a] text-slate-200">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 p-8 overflow-auto">
-        <header className="flex justify-between items-center mb-8">
+        <header className="flex justify-between flex-wrap gap-y-4 items-center mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-white">Aduan Warga</h1>
             <p className="text-slate-400">Monitoring keluhan masyarakat di seluruh wilayah</p>
@@ -78,7 +78,7 @@ export default function LurahAduanPage() {
             <div className="col-span-full py-20 text-center text-slate-500 italic">Tidak ada aduan ditemukan untuk wilayah ini.</div>
           ) : aduan.map((item) => (
             <div key={item.id} className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/5 p-6 hover:border-white/10 transition-all group">
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between flex-wrap gap-y-4 items-start mb-4">
                 <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
                   item.status === 'selesai' ? 'bg-emerald-500/20 text-emerald-400' :
                   item.status === 'diproses' ? 'bg-blue-500/20 text-blue-400' :
@@ -111,3 +111,4 @@ export default function LurahAduanPage() {
     </div>
   );
 }
+

@@ -79,7 +79,7 @@ export default function RTAduanPage() {
             <div className="col-span-full py-20 text-center text-slate-500 italic">Tidak ada aduan di wilayah Anda.</div>
           ) : aduan.map((item) => (
             <div key={item.id} className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/5 p-6 hover:border-white/10 transition-all flex flex-col">
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between flex-wrap gap-y-4 items-start mb-4">
                 <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
                   item.status === 'selesai' ? 'bg-emerald-500/20 text-emerald-400' :
                   item.status === 'diproses' ? 'bg-blue-500/20 text-blue-400' :
@@ -120,7 +120,7 @@ export default function RTAduanPage() {
         {selectedAduan && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-xl p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between flex-wrap gap-y-4 items-center mb-6">
                 <h2 className="text-2xl font-bold text-white">Tindak Lanjut Aduan</h2>
                 <button onClick={() => setSelectedAduan(null)} className="text-slate-400 hover:text-white">✕</button>
               </div>
@@ -162,3 +162,4 @@ export default function RTAduanPage() {
     </div>
   );
 }
+

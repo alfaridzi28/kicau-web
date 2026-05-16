@@ -107,7 +107,7 @@ export default function WargaBuatSuratPage() {
                   Belum ada riwayat pengajuan surat.
                 </div>
               ) : riwayat.map(s => (
-                <div key={s.id} className="bg-slate-800/40 p-5 rounded-2xl border border-white/5 flex justify-between items-center group hover:border-white/10 transition-all">
+                <div key={s.id} className="bg-slate-800/40 p-5 rounded-2xl border border-white/5 flex justify-between flex-wrap gap-y-4 items-center group hover:border-white/10 transition-all">
                   <div>
                     <p className="font-bold text-white text-sm">{s.kategori}</p>
                     <p className="text-[10px] text-slate-500 mt-1">{new Date(s.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
@@ -133,3 +133,4 @@ export default function WargaBuatSuratPage() {
     </div>
   );
 }
+

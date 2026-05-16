@@ -575,7 +575,7 @@ export default function RWIuranPage() {
         {selectedRt && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-6 z-50">
             <div className="bg-slate-900 border border-white/10 rounded-[48px] w-full max-w-2xl p-10 shadow-2xl animate-in zoom-in duration-300">
-               <div className="flex justify-between items-start mb-8">
+               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-8">
                   <div>
                     <h2 className="text-3xl font-black text-white tracking-tighter italic">Audit Tunggakan <span className="text-orange-400">RT {selectedRt}</span></h2>
                     <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Daftar warga yang belum menyelesaikan iuran berjalan</p>
@@ -646,7 +646,7 @@ export default function RWIuranPage() {
         {showReportModal && (
           <div className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 z-[60]">
             <div className="bg-white text-slate-900 rounded-[40px] w-full max-w-4xl p-12 shadow-2xl overflow-y-auto max-h-[95vh] print:p-0 print:shadow-none print:rounded-none">
-              <div className="flex justify-between items-start border-b-2 border-slate-900 pb-8 mb-8">
+              <div className="flex justify-between flex-wrap gap-y-4 items-start border-b-2 border-slate-900 pb-8 mb-8">
                  <div className="flex items-center gap-6">
                     <div className="w-20 h-20 bg-slate-900 rounded-2xl flex items-center justify-center text-white text-4xl font-black italic">K</div>
                     <div>
@@ -707,7 +707,7 @@ export default function RWIuranPage() {
                  </table>
               </div>
 
-              <div className="flex justify-between items-end pt-10 border-t-2 border-slate-100">
+              <div className="flex justify-between flex-wrap gap-y-4 items-end pt-10 border-t-2 border-slate-100">
                  <div className="flex flex-col items-center">
                     <div className="w-24 h-24 bg-white p-2 border-2 border-slate-900 rounded-2xl shadow-sm mb-2">
                        <img 
@@ -781,3 +781,4 @@ export default function RWIuranPage() {
     </div>
   );
 }
+

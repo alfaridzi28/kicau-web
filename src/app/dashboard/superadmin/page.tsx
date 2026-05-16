@@ -69,7 +69,7 @@ export default function SuperadminDashboard() {
           <div className="lg:col-span-2 space-y-10">
              {/* Regional Load Visualization */}
              <div className="bg-slate-800/40 backdrop-blur-xl rounded-[40px] p-10 border border-white/5 shadow-2xl">
-                <div className="flex justify-between items-center mb-12">
+                <div className="flex justify-between flex-wrap gap-y-4 items-center mb-12">
                    <h2 className="text-2xl font-black text-white flex items-center gap-4">
                      <span className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-xl shadow-inner">📈</span>
                      Beban Wilayah Terpadu
@@ -164,3 +164,4 @@ export default function SuperadminDashboard() {
     </div>
   );
 }
+

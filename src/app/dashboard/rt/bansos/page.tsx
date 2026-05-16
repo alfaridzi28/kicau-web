@@ -50,7 +50,7 @@ export default function RTBansosPage() {
     <div className="flex min-h-screen bg-[#0f172a] text-slate-200">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 p-8 overflow-auto">
-        <header className="mb-8 flex justify-between items-start">
+        <header className="mb-8 flex justify-between flex-wrap gap-y-4 items-start">
           <div>
             <h1 className="text-3xl font-extrabold text-white">Manajemen Data Sosial (Bansos)</h1>
             <p className="text-slate-400">Identifikasi warga yang berhak menerima bantuan sosial di RT {user.rt}</p>
@@ -146,3 +146,4 @@ export default function RTBansosPage() {
     </div>
   );
 }
+

@@ -191,7 +191,7 @@ export default function LurahStaffPage() {
         {showAddModal && (
           <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6 z-[2000]">
             <div className="bg-[#0f172a] border border-white/10 rounded-[60px] w-full max-w-2xl p-12 shadow-[0_0_100px_rgba(79,70,229,0.1)] animate-in zoom-in duration-300">
-               <div className="flex justify-between items-start mb-10">
+               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-10">
                   <div>
                      <h2 className="text-4xl font-black text-white tracking-tighter italic uppercase">Angkat Staff Baru</h2>
                      <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Cari warga untuk dijadikan bagian dari tim kelurahan</p>
@@ -268,3 +268,4 @@ export default function LurahStaffPage() {
     </div>
   );
 }
+

@@ -118,7 +118,7 @@ export default function RWBaganPage() {
              {/* Ketua RW */}
              <div className="relative group">
                 <div className="absolute inset-0 bg-emerald-500 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="relative bg-slate-800/60 backdrop-blur-xl p-8 rounded-[40px] border border-emerald-500/30 text-center w-80 shadow-2xl">
+                <div className="relative bg-slate-800/60 backdrop-blur-xl p-8 rounded-[40px] border border-emerald-500/30 text-center w-full max-w-xs shadow-2xl">
                   <div className="w-16 h-16 bg-emerald-600 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl border-2 border-emerald-400/30">👑</div>
                   <h3 className="text-xl font-black text-white">Ketua RW {user.rw}</h3>
                   <p className="text-emerald-400 text-xs font-black uppercase tracking-widest mt-2">{user.nama}</p>
@@ -160,7 +160,7 @@ export default function RWBaganPage() {
                     <div className={`w-full p-6 rounded-[32px] border transition-all relative ${
                       chair ? 'bg-slate-800/60 border-indigo-500/30' : 'bg-white/5 border-dashed border-white/10'
                     }`}>
-                      <div className="flex justify-between items-start mb-4">
+                      <div className="flex justify-between flex-wrap gap-y-4 items-start mb-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${chair ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-500'}`}>{num}</div>
                         {chair && (
                           <button onClick={() => handleRemove(chair.id)} className="text-slate-600 hover:text-red-400 text-xs">🗑️</button>
@@ -247,3 +247,5 @@ export default function RWBaganPage() {
     </div>
   );
 }
+
+

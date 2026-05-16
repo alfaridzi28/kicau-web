@@ -19,7 +19,7 @@ export default function LurahPetaPage() {
     <div className="flex h-screen bg-[#0f172a] text-slate-200 overflow-hidden">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="p-8 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl flex justify-between items-center">
+        <header className="p-8 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl flex justify-between flex-wrap gap-y-4 items-center">
           <div>
             <h1 className="text-4xl font-black text-white tracking-tighter italic">Sistem Informasi <span className="text-indigo-400">Spasial</span></h1>
             <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Visualisasi Sebaran Kependudukan & Titik Kesejahteraan</p>
@@ -38,3 +38,4 @@ export default function LurahPetaPage() {
     </div>
   );
 }
+

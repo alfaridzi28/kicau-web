@@ -129,7 +129,7 @@ export default function WargaDashboard() {
                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
                   <span className="text-9xl">🔔</span>
                </div>
-               <div className="flex justify-between items-center mb-8">
+               <div className="flex justify-between flex-wrap gap-y-4 items-center mb-8">
                   <h2 className="text-2xl font-black text-white flex items-center gap-4">
                     <span className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-xl shadow-inner">📰</span>
                     Warta Lingkungan
@@ -142,7 +142,7 @@ export default function WargaDashboard() {
                    </div>
                  ) : pemberitahuan.map(p => (
                    <div key={p.id} className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-[32px] p-8 transition-all hover:translate-x-2">
-                      <div className="flex justify-between items-start mb-2">
+                      <div className="flex justify-between flex-wrap gap-y-4 items-start mb-2">
                         <h3 className="text-lg font-bold text-white leading-tight">{p.judul}</h3>
                         <span className="bg-indigo-500/20 text-indigo-400 text-[9px] font-bold px-2 py-1 rounded uppercase">{new Date(p.created_at).toLocaleDateString()}</span>
                       </div>
@@ -297,3 +297,4 @@ export default function WargaDashboard() {
     </div>
   );
 }
+

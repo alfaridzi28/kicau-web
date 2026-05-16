@@ -149,7 +149,7 @@ export default function LurahAsetPage() {
                 <input 
                   type="text"
                   placeholder="Cari barang..."
-                  className="bg-slate-800/40 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-indigo-500/50 w-64 transition-all"
+                  className="bg-slate-800/40 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-indigo-500/50 w-full md:w-64 transition-all"
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(1); }}
                 />
@@ -333,3 +333,4 @@ export default function LurahAsetPage() {
     </div>
   );
 }
+

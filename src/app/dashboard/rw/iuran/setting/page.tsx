@@ -75,7 +75,7 @@ export default function RWSettingIuranPage() {
             
             return (
               <div key={rt} className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/5 p-6 shadow-lg">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between flex-wrap gap-y-4 items-center mb-6">
                   <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-xl">
                     {rt}
                   </div>
@@ -111,3 +111,4 @@ export default function RWSettingIuranPage() {
     </div>
   );
 }
+

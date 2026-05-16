@@ -83,7 +83,7 @@ export default function LurahDashboard() {
                     <div className="space-y-6">
                        {Object.keys(stats?.sebaran_rw || {}).length > 0 ? Object.keys(stats.sebaran_rw).map(rw => (
                          <div key={rw} className="space-y-2">
-                            <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
+                            <div className="flex justify-between flex-wrap gap-y-4 text-[10px] font-black text-slate-500 uppercase">
                                <span>RW {rw}</span>
                                <span className="text-indigo-400">{stats.sebaran_rw[rw]} Jiwa</span>
                             </div>
@@ -156,3 +156,4 @@ export default function LurahDashboard() {
     </div>
   );
 }
+

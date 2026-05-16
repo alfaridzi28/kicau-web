@@ -64,7 +64,7 @@ export default function WargaBaganPage() {
            {/* LEVEL 1: KETUA RW */}
            <div className="relative mb-24 flex flex-col items-center">
               <div className="absolute inset-0 bg-indigo-500 blur-[80px] opacity-20"></div>
-              <div className="relative bg-slate-800/80 backdrop-blur-2xl p-10 rounded-[48px] border-2 border-indigo-500/30 text-center w-96 shadow-2xl hover:border-indigo-400 transition-all duration-500">
+              <div className="relative bg-slate-800/80 backdrop-blur-2xl p-10 rounded-[48px] border-2 border-indigo-500/30 text-center w-full max-w-sm shadow-2xl hover:border-indigo-400 transition-all duration-500">
                 <div className="w-20 h-20 bg-indigo-600 rounded-3xl mx-auto mb-6 flex items-center justify-center text-4xl shadow-xl shadow-indigo-900/40">👑</div>
                 <h3 className="text-2xl font-black text-white tracking-tight uppercase italic">{ketuaRw?.nama || 'Belum Terdata'}</h3>
                 <p className="text-indigo-400 text-xs font-black uppercase tracking-[0.3em] mt-3">{ketuaRw?.jabatan || `Ketua RW ${user.rw}`}</p>
@@ -85,7 +85,7 @@ export default function WargaBaganPage() {
                    <div className="absolute top-1/2 left-0 w-full h-px bg-white/5 -z-10"></div>
                    
                    {staffRw.map(s => (
-                     <div key={s.id} className="bg-slate-800/40 backdrop-blur-md border border-white/10 p-6 rounded-[32px] text-center w-64 shadow-xl hover:-translate-y-1 transition-all">
+                     <div key={s.id} className="bg-slate-800/40 backdrop-blur-md border border-white/10 p-6 rounded-[32px] text-center w-full max-w-64 shadow-xl hover:-translate-y-1 transition-all">
                         <div className="w-10 h-10 bg-slate-700 rounded-xl mx-auto mb-4 flex items-center justify-center text-xl">👔</div>
                         <h4 className="text-sm font-black text-white uppercase tracking-tight">{s.nama}</h4>
                         <p className="text-[9px] text-indigo-400 font-bold uppercase tracking-widest mt-2">{s.jabatan || 'Tim Kerja RW'}</p>
@@ -156,3 +156,4 @@ export default function WargaBaganPage() {
     </div>
   );
 }
+

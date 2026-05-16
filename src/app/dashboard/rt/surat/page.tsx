@@ -239,7 +239,7 @@ export default function RTSuratPage() {
                   </div>
 
                   <div className="p-12 bg-white/[0.02]">
-                     <div className="flex justify-between items-center mb-8">
+                     <div className="flex justify-between flex-wrap gap-y-4 items-center mb-8">
                         <h2 className="text-xl font-black text-white tracking-widest uppercase">Validasi <span className="text-indigo-400">Digital</span></h2>
                         <button onClick={() => setSelectedSurat(null)} className="text-slate-500 hover:text-white transition-colors text-xl">✕</button>
                      </div>
@@ -265,3 +265,4 @@ export default function RTSuratPage() {
     </div>
   );
 }
+

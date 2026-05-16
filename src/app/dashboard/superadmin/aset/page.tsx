@@ -102,7 +102,7 @@ export default function SuperadminAsetPage() {
               <div className="p-5">
                 <h3 className="font-black text-white truncate group-hover:text-purple-400 transition-colors mb-1">{item.nama_aset}</h3>
                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">{item.kepemilikan.replace('_', ' ')}</p>
-                <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                <div className="flex justify-between flex-wrap gap-y-4 items-center pt-4 border-t border-white/5">
                    <span className="text-xs text-slate-400">Stok: <strong>{item.jumlah}</strong></span>
                    <button className="text-[10px] font-black text-purple-400 uppercase tracking-widest hover:underline">Kelola →</button>
                 </div>
@@ -114,3 +114,4 @@ export default function SuperadminAsetPage() {
     </div>
   );
 }
+

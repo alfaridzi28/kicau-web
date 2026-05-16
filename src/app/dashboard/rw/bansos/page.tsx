@@ -75,7 +75,7 @@ export default function RWBansosPage() {
         </div>
 
         <div className="bg-slate-800/40 rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
-          <div className="p-6 border-b border-white/5 flex justify-between items-center">
+          <div className="p-6 border-b border-white/5 flex justify-between flex-wrap gap-y-4 items-center">
             <h2 className="font-bold text-white">Daftar Penerima Bantuan</h2>
             <span className="text-xs text-slate-500 font-bold uppercase">{warga.length} Warga Terdeteksi</span>
           </div>
@@ -123,3 +123,4 @@ export default function RWBansosPage() {
     </div>
   );
 }
+

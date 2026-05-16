@@ -49,7 +49,7 @@ export default function WargaPemberitahuanPage() {
                    <span className="text-6xl">📢</span>
                 </div>
                 
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between flex-wrap gap-y-4 items-start mb-6">
                    <span className="bg-indigo-500/10 text-indigo-400 text-[9px] font-black px-2 py-1 rounded uppercase tracking-tighter border border-indigo-500/20">INFO RESMI</span>
                    <span className="text-[10px] text-slate-600 font-mono italic">{new Date(item.created_at).toLocaleDateString('id-ID')}</span>
                 </div>
@@ -75,3 +75,4 @@ export default function WargaPemberitahuanPage() {
     </div>
   );
 }
+

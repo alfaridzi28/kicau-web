@@ -139,7 +139,7 @@ export default function WargaBuatAduanPage() {
                 </div>
               ) : riwayat.map(a => (
                 <div key={a.id} className="bg-slate-800/40 p-5 rounded-2xl border border-white/5 hover:border-white/10 transition-all">
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex justify-between flex-wrap gap-y-4 items-start mb-3">
                     <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase ${
                       a.status === 'selesai' ? 'bg-emerald-500/20 text-emerald-400' :
                       a.status === 'diproses' ? 'bg-blue-500/20 text-blue-400' :
@@ -166,3 +166,4 @@ export default function WargaBuatAduanPage() {
     </div>
   );
 }
+

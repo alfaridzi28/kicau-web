@@ -18,7 +18,7 @@ export default function AduanPetaPage() {
     <div className="flex h-screen bg-[#0f172a] text-slate-200 overflow-hidden">
       <Sidebar user={user} onLogout={logout} />
       <main className="flex-1 flex flex-col">
-        <header className="p-6 border-b border-white/5 flex justify-between items-center">
+        <header className="p-6 border-b border-white/5 flex justify-between flex-wrap gap-y-4 items-center">
           <div>
             <h1 className="text-2xl font-bold">Peta Sebaran Aduan</h1>
             <p className="text-slate-400 text-sm mt-1">Pantau lokasi permasalahan di wilayah Anda secara real-time</p>
@@ -36,3 +36,4 @@ export default function AduanPetaPage() {
     </div>
   );
 }
+

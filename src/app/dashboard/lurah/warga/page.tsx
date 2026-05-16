@@ -111,7 +111,7 @@ export default function LurahWargaPage() {
                 <input 
                   type="text"
                   placeholder="Cari Nama atau NIK..."
-                  className="bg-slate-800/40 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:bg-slate-800 transition-all w-64 md:w-80"
+                  className="bg-slate-800/40 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:bg-slate-800 transition-all w-full md:w-64 md:w-80"
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(1); }}
                 />
@@ -206,7 +206,7 @@ export default function LurahWargaPage() {
                    <button onClick={() => setSelectedWarga(null)} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">✕</button>
                 </div>
                 <div className="px-12 pb-12">
-                   <div className="relative -mt-16 mb-8 flex justify-between items-end">
+                   <div className="relative -mt-16 mb-8 flex justify-between flex-wrap gap-y-4 items-end">
                       <div className="w-32 h-32 bg-slate-800 rounded-[40px] border-8 border-slate-900 overflow-hidden shadow-2xl">
                          {selectedWarga.foto ? (
                             <img src={selectedWarga.foto} className="w-full h-full object-cover" />
@@ -229,11 +229,11 @@ export default function LurahWargaPage() {
                          <div className="space-y-2">
                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Informasi Identitas</p>
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-3">
-                               <div className="flex justify-between text-xs">
+                               <div className="flex justify-between flex-wrap gap-y-4 text-xs">
                                   <span className="text-slate-500">NIK:</span>
                                   <span className="text-white font-mono">{selectedWarga.nik || '-'}</span>
                                </div>
-                               <div className="flex justify-between text-xs">
+                               <div className="flex justify-between flex-wrap gap-y-4 text-xs">
                                   <span className="text-slate-500">No. KK:</span>
                                   <span className="text-white font-mono">{selectedWarga.nomor_kk || '-'}</span>
                                </div>
@@ -302,3 +302,5 @@ export default function LurahWargaPage() {
     </div>
   );
 }
+
+

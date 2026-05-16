@@ -89,8 +89,8 @@ export default function RTDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
              <div className="bg-slate-800/30 backdrop-blur-3xl rounded-[56px] p-12 border border-white/5 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 blur-[100px] rounded-full"></div>
-                <div className="flex justify-between items-center mb-12 relative z-10">
+                <div className="absolute top-0 right-0 w-full md:w-64 h-64 bg-cyan-500/5 blur-[100px] rounded-full"></div>
+                <div className="flex justify-between flex-wrap gap-y-4 items-center mb-12 relative z-10">
                    <h2 className="text-3xl font-black text-white flex items-center gap-5 italic tracking-tighter uppercase">
                      <span className="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-2xl shadow-inner border border-cyan-500/20">📊</span>
                      Statistik Iuran
@@ -102,7 +102,7 @@ export default function RTDashboard() {
                 
                 <div className="space-y-10 relative z-10">
                    <div className="relative">
-                      <div className="flex justify-between items-end mb-4">
+                      <div className="flex justify-between flex-wrap gap-y-4 items-end mb-4">
                          <div>
                             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Capaian Koleksi</span>
                             <span className="text-5xl font-black text-white italic tracking-tighter">{progressPercent}%</span>
@@ -118,7 +118,7 @@ export default function RTDashboard() {
                            style={{ width: `${progressPercent}%` }}
                          ></div>
                       </div>
-                      <div className="flex justify-between mt-4 text-[11px] font-black text-slate-600 uppercase tracking-widest">
+                      <div className="flex justify-between flex-wrap gap-y-4 mt-4 text-[11px] font-black text-slate-600 uppercase tracking-widest">
                          <span>Target: Rp {totalCollectedTarget.toLocaleString()}</span>
                          <span>Selisih: Rp {(totalCollectedTarget - collectedNow).toLocaleString()}</span>
                       </div>
@@ -138,7 +138,7 @@ export default function RTDashboard() {
              </div>
 
              <div className="bg-slate-800/30 backdrop-blur-3xl rounded-[56px] p-12 border border-white/5 shadow-2xl relative overflow-hidden">
-                <div className="flex justify-between items-center mb-12">
+                <div className="flex justify-between flex-wrap gap-y-4 items-center mb-12">
                    <h2 className="text-3xl font-black text-white flex items-center gap-5 italic tracking-tighter uppercase">
                      <span className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-2xl shadow-inner border border-orange-500/20">📢</span>
                      Aduan Warga
@@ -152,7 +152,7 @@ export default function RTDashboard() {
                         <p className="text-slate-600 font-black uppercase text-[10px] tracking-widest italic">Wilayah dalam kondisi kondusif (Tidak ada aduan).</p>
                      </div>
                    ) : aduan.map(a => (
-                     <div key={a.id} className="p-8 bg-white/5 hover:bg-white/10 rounded-[40px] border border-white/5 transition-all group flex justify-between items-center shadow-lg">
+                     <div key={a.id} className="p-8 bg-white/5 hover:bg-white/10 rounded-[40px] border border-white/5 transition-all group flex justify-between flex-wrap gap-y-4 items-center shadow-lg">
                         <div className="flex items-center gap-6">
                            <div className={`w-3 h-3 rounded-full ${a.status === 'selesai' ? 'bg-emerald-500' : 'bg-orange-500 animate-pulse'}`}></div>
                            <div>
@@ -205,7 +205,7 @@ export default function RTDashboard() {
                      { label: 'Wilayah RW', value: `RW ${user?.rw}` },
                      { label: 'Wilayah RT', value: `RT ${user?.rt}` }
                    ].map(info => (
-                     <div key={info.label} className="flex justify-between items-center text-[10px]">
+                     <div key={info.label} className="flex justify-between flex-wrap gap-y-4 items-center text-[10px]">
                         <span className="text-slate-500 font-black uppercase tracking-widest">{info.label}</span>
                         <span className="text-white font-black uppercase tracking-tight text-right">{info.value || '-'}</span>
                      </div>
@@ -222,3 +222,5 @@ export default function RTDashboard() {
     </div>
   );
 }
+
+

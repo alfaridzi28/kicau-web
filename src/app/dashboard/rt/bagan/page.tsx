@@ -78,7 +78,7 @@ export default function RTBaganPage() {
            {/* Ketua RT */}
            <div className="relative group">
               <div className="absolute inset-0 bg-cyan-500 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-              <div className="relative bg-slate-800/60 backdrop-blur-xl p-10 rounded-[40px] border border-cyan-500/30 text-center w-80 shadow-2xl">
+              <div className="relative bg-slate-800/60 backdrop-blur-xl p-10 rounded-[40px] border border-cyan-500/30 text-center w-full max-w-xs shadow-2xl">
                 <div className="w-16 h-16 bg-cyan-600 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl">🏠</div>
                 <h3 className="text-xl font-black text-white">Ketua RT {user.rt}</h3>
                 <p className="text-cyan-400 text-xs font-black uppercase tracking-widest mt-2">{user.nama}</p>
@@ -142,3 +142,4 @@ export default function RTBaganPage() {
     </div>
   );
 }
+

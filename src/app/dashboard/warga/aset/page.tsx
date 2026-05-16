@@ -183,7 +183,7 @@ export default function WargaAsetPage() {
         {showPinjamModal && selectedAset && (
           <div className="fixed inset-0 bg-[#020617]/95 backdrop-blur-2xl flex items-center justify-center p-6 z-50">
             <div className="bg-[#0f172a] border border-white/10 rounded-[48px] w-full max-w-xl p-12 shadow-2xl animate-in zoom-in duration-300">
-               <div className="flex justify-between items-start mb-10">
+               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-10">
                   <div>
                     <h2 className="text-3xl font-black text-white tracking-tighter italic uppercase">Form <span className="text-indigo-400">Peminjaman</span></h2>
                     <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Aset: {selectedAset.nama_aset}</p>
@@ -229,3 +229,4 @@ export default function WargaAsetPage() {
     </div>
   );
 }
+

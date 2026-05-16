@@ -75,7 +75,7 @@ export default function RWDashboard() {
           <div className="lg:col-span-2 space-y-10">
              {/* Distribution Chart */}
              <div className="bg-slate-800/40 backdrop-blur-xl rounded-[40px] p-10 border border-white/5 shadow-2xl">
-                <div className="flex justify-between items-center mb-12">
+                <div className="flex justify-between flex-wrap gap-y-4 items-center mb-12">
                    <h2 className="text-2xl font-black text-white flex items-center gap-4">
                      <span className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-xl shadow-inner">📊</span>
                      Distribusi Penduduk per RT
@@ -163,7 +163,7 @@ export default function RWDashboard() {
                 <h3 className="text-xl font-black text-white mb-8">Otoritas Wilayah</h3>
                 <div className="space-y-8">
                    <div className="relative">
-                      <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase mb-2">
+                      <div className="flex justify-between flex-wrap gap-y-4 text-[10px] font-black text-slate-500 uppercase mb-2">
                          <span>Kepatuhan Iuran</span>
                          <span className="text-emerald-400">{compliancePercent}%</span>
                       </div>
@@ -173,11 +173,11 @@ export default function RWDashboard() {
                    </div>
                    
                    <div className="pt-6 border-t border-white/5 space-y-4">
-                      <div className="flex justify-between items-center text-[10px]">
+                      <div className="flex justify-between flex-wrap gap-y-4 items-center text-[10px]">
                          <span className="text-slate-500 font-bold uppercase">Kelurahan</span>
                          <span className="text-white font-black">{stats?.kelurahan || '-'}</span>
                       </div>
-                      <div className="flex justify-between items-center text-[10px]">
+                      <div className="flex justify-between flex-wrap gap-y-4 items-center text-[10px]">
                          <span className="text-slate-500 font-bold uppercase">Kecamatan</span>
                          <span className="text-white font-black">{stats?.kecamatan || '-'}</span>
                       </div>
@@ -197,3 +197,4 @@ export default function RWDashboard() {
     </div>
   );
 }
+

@@ -92,7 +92,7 @@ export default function LurahPemberitahuanPage() {
                 <input 
                   type="text"
                   placeholder="Cari dokumentasi informasi..."
-                  className="bg-slate-800/40 border border-white/5 rounded-[32px] py-5 pl-16 pr-10 text-base text-white focus:outline-none focus:border-indigo-500/50 w-80 md:w-[450px] transition-all shadow-2xl backdrop-blur-md"
+                  className="bg-slate-800/40 border border-white/5 rounded-[32px] py-5 pl-16 pr-10 text-base text-white focus:outline-none focus:border-indigo-500/50 w-full md:w-[450px] transition-all shadow-2xl backdrop-blur-md"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                 />
@@ -151,7 +151,7 @@ export default function LurahPemberitahuanPage() {
              </div>
            ) : filteredNews.map((item) => (
              <div key={item.id} className="bg-slate-800/40 backdrop-blur-3xl p-14 rounded-[64px] border border-white/5 hover:border-indigo-500/40 transition-all group relative flex flex-col h-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] animate-in fade-in slide-in-from-bottom duration-1000">
-                <div className="mb-10 flex justify-between items-center">
+                <div className="mb-10 flex justify-between flex-wrap gap-y-4 items-center">
                    <span className="text-[11px] font-black px-6 py-2.5 rounded-2xl uppercase tracking-widest border shadow-xl bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
                       🏛️ RESMI KELURAHAN
                    </span>
@@ -168,7 +168,7 @@ export default function LurahPemberitahuanPage() {
                    Baca Maklumat Selengkapnya <span className="group-hover:translate-x-3 transition-transform text-xl">→</span>
                 </button>
 
-                <div className="mt-auto pt-12 border-t border-white/5 flex justify-between items-center">
+                <div className="mt-auto pt-12 border-t border-white/5 flex justify-between flex-wrap gap-y-4 items-center">
                    <div className="flex items-center gap-6">
                       <div className="w-16 h-16 rounded-[24px] flex items-center justify-center text-2xl bg-slate-900 border border-white/5 shadow-2xl">
                          🖋️
@@ -197,7 +197,7 @@ export default function LurahPemberitahuanPage() {
           <div className="fixed inset-0 bg-[#020617]/99 backdrop-blur-[40px] flex items-center justify-center p-6 z-[3000]">
              <div className="bg-[#0f172a] border border-white/10 rounded-[80px] w-full max-w-5xl overflow-hidden shadow-[0_0_200px_rgba(79,70,229,0.25)] animate-in zoom-in duration-700 flex flex-col max-h-[90vh]">
                 <div className="p-20 overflow-y-auto custom-scrollbar">
-                   <div className="mb-16 flex justify-between items-start">
+                   <div className="mb-16 flex justify-between flex-wrap gap-y-4 items-start">
                       <div className="flex gap-6">
                         <span className="text-[12px] font-black px-8 py-3 rounded-2xl uppercase tracking-widest border bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-xl">
                            🏛️ MAKLUMAT KELURAHAN
@@ -214,7 +214,7 @@ export default function LurahPemberitahuanPage() {
                       {selectedNews.isi}
                    </div>
                 </div>
-                <div className="p-16 bg-slate-950/90 border-t border-white/10 flex justify-between items-center mt-auto backdrop-blur-2xl">
+                <div className="p-16 bg-slate-950/90 border-t border-white/10 flex justify-between flex-wrap gap-y-4 items-center mt-auto backdrop-blur-2xl">
                    <div className="flex items-center gap-8">
                       <div className="w-20 h-20 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center text-4xl shadow-2xl">🛡️</div>
                       <div className="flex flex-col">
@@ -232,7 +232,7 @@ export default function LurahPemberitahuanPage() {
         {showModal && (
           <div className="fixed inset-0 bg-[#020617]/99 backdrop-blur-[30px] flex items-center justify-center p-6 z-[2500]">
             <div className="bg-[#0f172a] border border-white/10 rounded-[72px] w-full max-w-4xl p-20 shadow-[0_0_150px_rgba(79,70,229,0.2)] animate-in zoom-in duration-700">
-               <div className="flex justify-between items-start mb-16">
+               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-16">
                   <div>
                      <h2 className="text-6xl font-black text-white tracking-tighter italic uppercase">Maklumat <span className="text-indigo-400">Baru</span></h2>
                      <p className="text-slate-500 text-[12px] font-bold uppercase tracking-[0.4em] mt-3 ml-2">Diseminasi Informasi Strategis Kelurahan</p>
@@ -275,3 +275,5 @@ export default function LurahPemberitahuanPage() {
     </div>
   );
 }
+
+

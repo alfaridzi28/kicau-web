@@ -114,7 +114,7 @@ export default function RWAduanPage() {
             </div>
           ) : aduan.map((item) => (
             <div key={item.id} className="bg-slate-800/40 backdrop-blur-md rounded-[32px] border border-white/5 p-8 hover:border-indigo-500/30 transition-all flex flex-col group shadow-2xl">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between flex-wrap gap-y-4 items-start mb-6">
                 <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter border ${
                   item.status === 'selesai' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                   item.status === 'diproses' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
@@ -156,7 +156,7 @@ export default function RWAduanPage() {
         {selectedAduan && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
             <div className="bg-slate-900 border border-white/10 rounded-[48px] w-full max-w-2xl p-10 shadow-2xl overflow-y-auto max-h-[90vh] animate-in zoom-in duration-300">
-              <div className="flex justify-between items-center mb-10">
+              <div className="flex justify-between flex-wrap gap-y-4 items-center mb-10">
                 <div>
                   <h2 className="text-3xl font-black text-white italic tracking-tighter">Detail <span className="text-indigo-400">Aduan Warga</span></h2>
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">ID: {selectedAduan.id.slice(0,8)} • Status: {selectedAduan.status.replace('_', ' ')}</p>
@@ -209,3 +209,4 @@ export default function RWAduanPage() {
     </div>
   );
 }
+

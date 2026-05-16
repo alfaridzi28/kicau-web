@@ -90,7 +90,7 @@ export default function SuperadminPemberitahuanPage() {
                 </div>
                 <h3 className="text-xl font-black text-white group-hover:text-purple-400 transition-colors mb-4 pr-10">{item.judul}</h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-4">{item.isi}</p>
-                <div className="flex justify-between items-center mt-auto pt-6 border-t border-white/5">
+                <div className="flex justify-between flex-wrap gap-y-4 items-center mt-auto pt-6 border-t border-white/5">
                    <span className="text-[10px] text-slate-500 font-mono italic">{new Date(item.created_at).toLocaleDateString()}</span>
                    <button 
                      onClick={() => handleDelete(item.id)}
@@ -167,3 +167,4 @@ export default function SuperadminPemberitahuanPage() {
     </div>
   );
 }
+

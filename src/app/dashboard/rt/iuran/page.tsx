@@ -533,7 +533,7 @@ export default function RTIuranPage() {
         {showReportModal && (
           <div className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 z-[60]">
             <div className="bg-white text-slate-900 rounded-[40px] w-full max-w-4xl p-12 shadow-2xl overflow-y-auto max-h-[95vh] print:p-0 print:shadow-none print:rounded-none">
-              <div className="flex justify-between items-start border-b-2 border-slate-900 pb-8 mb-8">
+              <div className="flex justify-between flex-wrap gap-y-4 items-start border-b-2 border-slate-900 pb-8 mb-8">
                  <div className="flex items-center gap-6">
                     <div className="w-20 h-20 bg-slate-900 rounded-2xl flex items-center justify-center text-white text-4xl font-black italic">K</div>
                     <div>
@@ -594,7 +594,7 @@ export default function RTIuranPage() {
                  </table>
               </div>
 
-              <div className="flex justify-between items-end pt-10 border-t-2 border-slate-100">
+              <div className="flex justify-between flex-wrap gap-y-4 items-end pt-10 border-t-2 border-slate-100">
                  <div className="flex flex-col items-center">
                     <div className="w-24 h-24 bg-white p-2 border-2 border-slate-900 rounded-2xl mb-2">
                        <img 
@@ -662,3 +662,4 @@ export default function RTIuranPage() {
     </div>
   );
 }
+
