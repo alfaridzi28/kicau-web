@@ -88,7 +88,7 @@ export default function WargaBuatSuratPage() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-900/20 transition-all active:scale-[0.98] disabled:opacity-50"
+                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none "
               >
                 {loading ? 'Mengirim...' : 'Kirim Permohonan →'}
               </button>
@@ -133,4 +133,5 @@ export default function WargaBuatSuratPage() {
     </div>
   );
 }
+
 

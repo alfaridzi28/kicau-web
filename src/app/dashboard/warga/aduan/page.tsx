@@ -120,7 +120,7 @@ export default function WargaBuatAduanPage() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-orange-900/20 transition-all active:scale-[0.98] disabled:opacity-50"
+                className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-orange-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none "
               >
                 {loading ? 'Mengirim Laporan...' : 'Kirim Laporan Masyarakat →'}
               </button>
@@ -166,4 +166,5 @@ export default function WargaBuatAduanPage() {
     </div>
   );
 }
+
 

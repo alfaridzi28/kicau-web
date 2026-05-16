@@ -178,13 +178,13 @@ export default function SuperadminWargaPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-3 py-8">
-             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase transition-all border border-white/5">← Prev</button>
+             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">← Prev</button>
              <div className="flex gap-2">
                 {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => (
                    <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 rounded-lg text-xs font-black transition-all ${page === i + 1 ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20' : 'bg-slate-800 text-slate-500 border border-white/5'}`}>{i + 1}</button>
                 ))}
              </div>
-             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase transition-all border border-white/5">Next →</button>
+             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-6 py-3 rounded-xl bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 font-black text-xs uppercase transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">Next →</button>
           </div>
         )}
 
@@ -253,3 +253,4 @@ export default function SuperadminWargaPage() {
     </div>
   );
 }
+

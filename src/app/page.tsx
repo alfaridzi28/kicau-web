@@ -257,45 +257,46 @@ export default function LandingPage() {
               <p className="text-white/40 text-sm mt-1">Gunakan NIK dan password Anda</p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-300 text-sm flex gap-2">
-                  <span>⚠️</span><span>{error}</span>
+            <form onSubmit={handleLogin}>
+              <fieldset disabled={loading} className="space-y-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-300 text-sm flex gap-2">
+                    <span>⚠️</span><span>{error}</span>
+                  </div>
+                )}
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">NIK</label>
+                  <input
+                    type="text"
+                    id="nik"
+                    value={nik}
+                    onChange={(e) => setNik(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="Masukkan NIK Anda"
+                  />
                 </div>
-              )}
-              <div>
-                <label className="block text-white/70 text-sm mb-2">NIK</label>
-                <input
-                  type="text"
-                  id="nik"
-                  value={nik}
-                  onChange={(e) => setNik(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
-                  placeholder="Masukkan NIK Anda"
-                />
-              </div>
-              <div>
-                <label className="block text-white/70 text-sm mb-2">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
-                  placeholder="Masukkan password"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Memproses...</>
-                ) : 'Masuk →'}
-              </button>
+                <div>
+                  <label className="block text-white/70 text-sm mb-2">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="Masukkan password"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Memproses...</>
+                  ) : 'Masuk →'}
+                </button>
+              </fieldset>
             </form>
 
             {/* Dev hints */}
@@ -328,3 +329,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

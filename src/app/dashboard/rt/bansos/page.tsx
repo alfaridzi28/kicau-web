@@ -100,7 +100,7 @@ export default function RTBansosPage() {
                       checked={w.is_fakir} 
                       onChange={() => toggleBansos(w.id, 'is_fakir', w.is_fakir)}
                       disabled={updatingId === w.id}
-                      className="w-4 h-4 rounded accent-red-500 cursor-pointer"
+                      className="w-4 h-4 rounded accent-red-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none "
                     />
                   </td>
                   <td className="p-4 text-center">
@@ -109,7 +109,7 @@ export default function RTBansosPage() {
                       checked={w.is_miskin} 
                       onChange={() => toggleBansos(w.id, 'is_miskin', w.is_miskin)}
                       disabled={updatingId === w.id}
-                      className="w-4 h-4 rounded accent-orange-500 cursor-pointer"
+                      className="w-4 h-4 rounded accent-orange-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none "
                     />
                   </td>
                   <td className="p-4 text-center">
@@ -118,7 +118,7 @@ export default function RTBansosPage() {
                       checked={w.is_ibu_hamil} 
                       onChange={() => toggleBansos(w.id, 'is_ibu_hamil', w.is_ibu_hamil)}
                       disabled={updatingId === w.id}
-                      className="w-4 h-4 rounded accent-pink-500 cursor-pointer"
+                      className="w-4 h-4 rounded accent-pink-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none "
                     />
                   </td>
                   <td className="p-4 text-center">
@@ -127,7 +127,7 @@ export default function RTBansosPage() {
                       checked={w.is_balita} 
                       onChange={() => toggleBansos(w.id, 'is_balita', w.is_balita)}
                       disabled={updatingId === w.id}
-                      className="w-4 h-4 rounded accent-cyan-500 cursor-pointer"
+                      className="w-4 h-4 rounded accent-cyan-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none "
                     />
                   </td>
                   <td className="p-4 text-right">
@@ -146,4 +146,5 @@ export default function RTBansosPage() {
     </div>
   );
 }
+
 

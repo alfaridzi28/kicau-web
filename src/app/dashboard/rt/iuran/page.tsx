@@ -305,8 +305,8 @@ export default function RTIuranPage() {
                 <div className="p-6 border-t border-white/5 flex items-center justify-between bg-white/5">
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Halaman {wargaPage} dari {Math.ceil(wargaTotal / limit)}</p>
                   <div className="flex gap-2">
-                     <button onClick={() => setWargaPage(p => Math.max(1, p - 1))} disabled={wargaPage === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase">Prev</button>
-                     <button onClick={() => setWargaPage(p => Math.min(Math.ceil(wargaTotal/limit), p + 1))} disabled={wargaPage === Math.ceil(wargaTotal/limit)} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase">Next</button>
+                     <button onClick={() => setWargaPage(p => Math.max(1, p - 1))} disabled={wargaPage === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">Prev</button>
+                     <button onClick={() => setWargaPage(p => Math.min(Math.ceil(wargaTotal/limit), p + 1))} disabled={wargaPage === Math.ceil(wargaTotal/limit)} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">Next</button>
                   </div>
                 </div>
               )}
@@ -415,8 +415,8 @@ export default function RTIuranPage() {
                   <div className="p-6 border-t border-white/5 flex items-center justify-between bg-white/5">
                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Halaman {transaksiPage} dari {Math.ceil(transaksiTotal / limit)}</p>
                     <div className="flex gap-2">
-                       <button onClick={() => setTransaksiPage(p => Math.max(1, p - 1))} disabled={transaksiPage === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase">Prev</button>
-                       <button onClick={() => setTransaksiPage(p => Math.min(Math.ceil(transaksiTotal/limit), p + 1))} disabled={transaksiPage === Math.ceil(transaksiTotal/limit)} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase">Next</button>
+                       <button onClick={() => setTransaksiPage(p => Math.max(1, p - 1))} disabled={transaksiPage === 1} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">Prev</button>
+                       <button onClick={() => setTransaksiPage(p => Math.min(Math.ceil(transaksiTotal/limit), p + 1))} disabled={transaksiPage === Math.ceil(transaksiTotal/limit)} className="px-4 py-2 rounded-xl bg-slate-800 text-white disabled:opacity-30 font-black text-[10px] uppercase disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">Next</button>
                     </div>
                   </div>
                 )}
@@ -662,4 +662,5 @@ export default function RTIuranPage() {
     </div>
   );
 }
+
 

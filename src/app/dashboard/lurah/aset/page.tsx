@@ -320,7 +320,7 @@ export default function LurahAsetPage() {
 
                       <div className="flex gap-4 pt-4">
                          <button type="button" onClick={() => { setShowAddModal(false); setShowEditModal(false); }} className="flex-1 py-4 rounded-2xl text-slate-400 font-bold hover:bg-white/5 transition-all uppercase text-[10px] tracking-widest">Batal</button>
-                         <button type="submit" disabled={uploading} className="flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black uppercase tracking-widest shadow-lg shadow-indigo-900/40 disabled:opacity-50">
+                         <button type="submit" disabled={uploading} className="flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black uppercase tracking-widest shadow-lg shadow-indigo-900/40 disabled:opacity-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">
                             {selectedAset ? 'Simpan Perubahan' : 'Simpan Inventaris'}
                          </button>
                       </div>
@@ -333,4 +333,5 @@ export default function LurahAsetPage() {
     </div>
   );
 }
+
 

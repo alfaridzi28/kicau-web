@@ -227,17 +227,18 @@ export default function LurahBansosPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-3 py-10 animate-in fade-in duration-1000">
-             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-3 rounded-2xl bg-slate-800 text-white disabled:opacity-20 hover:bg-slate-700 font-black text-[10px] uppercase transition-all border border-white/5">← Prev</button>
+             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-6 py-3 rounded-2xl bg-slate-800 text-white disabled:opacity-20 hover:bg-slate-700 font-black text-[10px] uppercase transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">← Prev</button>
              <div className="flex gap-2">
                 {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => (
                    <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 rounded-xl text-[10px] font-black transition-all ${page === i + 1 ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-500 border border-white/5'}`}>{i + 1}</button>
                 ))}
              </div>
-             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-6 py-3 rounded-2xl bg-slate-800 text-white disabled:opacity-20 hover:bg-slate-700 font-black text-[10px] uppercase transition-all border border-white/5">Next →</button>
+             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-6 py-3 rounded-2xl bg-slate-800 text-white disabled:opacity-20 hover:bg-slate-700 font-black text-[10px] uppercase transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">Next →</button>
           </div>
         )}
       </main>
     </div>
   );
 }
+
 
