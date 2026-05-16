@@ -13,7 +13,7 @@ export default function SuperadminSuratPage() {
     setLoading(true);
     try {
       const data = await apiFetch('/surat');
-      setSurat(data);
+      setSurat(data.items || []);
     } catch (err) {
       console.error(err);
     } finally {
