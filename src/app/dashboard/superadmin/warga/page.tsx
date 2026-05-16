@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
 import Sidebar from '@/components/Sidebar';
+import ExportButton from '@/components/ExportButton';
 
 export default function SuperadminWargaPage() {
   const { user, isLoading, logout } = useAuth();
@@ -32,6 +33,11 @@ export default function SuperadminWargaPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFetchAllWarga = async () => {
+    const data = await apiFetch('/warga?skip=0&limit=10000');
+    return { data: data.items || [] };
   };
 
   useEffect(() => {
@@ -101,6 +107,20 @@ export default function SuperadminWargaPage() {
              <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Total {total} Akun Sistem • Halaman {page} dari {totalPages || 1}</p>
           </div>
           <div className="flex gap-4 w-full md:w-auto">
+            <ExportButton 
+              data={warga}
+              filename="Seluruh_Pengguna_Sistem"
+              columns={[
+                { key: 'nama', label: 'Nama Lengkap' },
+                { key: 'nik', label: 'NIK' },
+                { key: 'role', label: 'Role' },
+                { key: 'rt', label: 'RT' },
+                { key: 'rw', label: 'RW' },
+                { key: 'no_telp', label: 'No. Telp' }
+              ]}
+              label="Export Akun"
+              fetchDataToExport={handleFetchAllWarga}
+            />
             <button 
               onClick={() => setShowModal(true)}
               className="bg-purple-600 hover:bg-purple-500 text-white font-black px-8 py-3 rounded-2xl shadow-xl shadow-purple-900/20 transition-all active:scale-95 uppercase tracking-widest text-[10px] whitespace-nowrap"

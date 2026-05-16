@@ -18,6 +18,7 @@ export default function SuperadminAsetPage() {
       const query = new URLSearchParams();
       if (filterRw) query.append('rw', filterRw);
       if (filterRt) query.append('rt', filterRt);
+      query.append('limit', '10000');
       
       const data = await apiFetch(`/aset?${query.toString()}`);
       setAset(data.items || []);

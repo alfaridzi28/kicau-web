@@ -42,6 +42,17 @@ export default function RWSuratPage() {
     }
   };
 
+  const handleFetchAllSurat = async () => {
+    const statusParam = statusFilter === 'all' ? '' : statusFilter;
+    const res = await apiFetch(`/surat?rw=${user?.rw}&rt=${filterRt}&status=${statusParam}&skip=0&limit=10000`);
+    const mappedItems = (res.items || []).map((s: any) => ({
+      ...s,
+      nama: s.user?.nama || '-',
+      rt: s.user?.rt || '-'
+    }));
+    return { data: mappedItems };
+  };
+
   useEffect(() => {
     if (user) fetchSurat();
   }, [user, page, filterRt, statusFilter]);
@@ -88,6 +99,7 @@ export default function RWSuratPage() {
                  { key: 'status', label: 'Status' }
                ]}
                label="Export XLSX"
+               fetchDataToExport={handleFetchAllSurat}
              />
           </div>
         </header>

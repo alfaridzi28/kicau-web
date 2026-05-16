@@ -63,7 +63,7 @@ export default function SuperadminBansosPage() {
           </div>
           
           <ExportButton 
-            data={data.map(w => ({
+            data={allData.map(w => ({
               ...w,
               kategori: [
                 w.is_fakir && 'Bantuan Khusus (Fakir)',
@@ -79,7 +79,7 @@ export default function SuperadminBansosPage() {
               { key: 'rw', label: 'RW' },
               { key: 'kategori', label: 'Kategori Bantuan' }
             ]}
-            label="Export Halaman Ini"
+            label="Export Semua Data"
           />
         </header>
 

@@ -101,6 +101,17 @@ export default function RWIuranPage() {
     }
   };
 
+  const handleFetchAllTransaksi = async () => {
+    const res = await apiFetch(`/iuran/transaksi?bulan_tahun=${bulanTahun}&skip=0&limit=10000`);
+    let items = res.items || [];
+    items = items.filter((t: any) => {
+      const matchType = filterType === 'all' || t.tipe === filterType;
+      const matchKat = filterKategori === 'all' || t.kategori === filterKategori;
+      return matchType && matchKat;
+    });
+    return { data: items };
+  };
+
   useEffect(() => {
     if (user) fetchData();
   }, [user, activeTab, bulanTahun, transaksiPage]);
@@ -455,6 +466,7 @@ export default function RWIuranPage() {
                          { key: 'nominal', label: 'Nominal' },
                          { key: 'keterangan', label: 'Keterangan' }
                        ]}
+                       fetchDataToExport={handleFetchAllTransaksi}
                      />
                    </div>
                 </div>

@@ -48,7 +48,13 @@ export default function LurahSuratPage() {
     const statusParam = statusFilter === 'all' ? '' : statusFilter;
     const endpoint = `/surat?rw=${filterRw}&rt=${filterRt}&status=${statusParam}&limit=10000`;
     const data = await apiFetch(endpoint);
-    return { data: data.items || [] };
+    const mappedItems = (data.items || []).map((s: any) => ({
+      ...s,
+      nama: s.user?.nama || '-',
+      rt: s.user?.rt || '-',
+      rw: s.user?.rw || '-'
+    }));
+    return { data: mappedItems };
   };
 
   useEffect(() => {
