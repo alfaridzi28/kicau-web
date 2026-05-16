@@ -14,9 +14,9 @@ export default function RWBansosPage() {
   const fetchWarga = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch(`/warga?rw=${user?.rw}`);
+      const data = await apiFetch(`/warga?rw=${user?.rw}&limit=10000`);
       // Filter for warga only who receive any kind of bansos
-      setWarga(data.filter((w: any) => (w.is_fakir || w.is_miskin || w.is_ibu_hamil || w.is_balita)));
+      setWarga(data.items ? data.items.filter((w: any) => (w.is_fakir || w.is_miskin || w.is_ibu_hamil || w.is_balita)) : []);
     } catch (err) {
       console.error(err);
     } finally {

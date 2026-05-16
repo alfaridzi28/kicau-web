@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
+import { fileToBase64, compressImage } from '@/lib/image';
 import Sidebar from '@/components/Sidebar';
 import StatCard from '@/components/StatCard';
 import ExportButton from '@/components/ExportButton';
@@ -58,21 +59,21 @@ export default function LurahAsetPage() {
     }
   };
 
+  const handleFetchAllData = async () => {
+    const url = `/aset?search=${search}&status=${filterStatus}&limit=10000`;
+    const data = await apiFetch(url);
+    return { data: data.items || [] };
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      setFormAset({ ...formAset, foto: data.url });
+      const base64 = await fileToBase64(file);
+      const compressed = await compressImage(base64);
+      setFormAset({ ...formAset, foto: compressed });
     } catch (err) {
       alert("Gagal mengunggah foto");
     } finally {
@@ -176,6 +177,7 @@ export default function LurahAsetPage() {
                  { key: 'deskripsi', label: 'Catatan' }
                ]}
                label="Export XLSX"
+               fetchDataToExport={handleFetchAllData}
              />
           </div>
         </header>

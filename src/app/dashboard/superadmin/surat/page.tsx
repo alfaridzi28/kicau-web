@@ -8,6 +8,7 @@ export default function SuperadminSuratPage() {
   const { user, isLoading, logout } = useAuth();
   const [surat, setSurat] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSurat, setSelectedSurat] = useState<any>(null);
 
   const fetchSurat = async () => {
     setLoading(true);
@@ -69,19 +70,55 @@ export default function SuperadminSuratPage() {
                      {new Date(s.created_at).toLocaleString('id-ID')}
                   </td>
                   <td className="p-8 text-right">
-                    <span className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase border ${
-                      s.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 
-                      s.status === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
-                      'bg-orange-500/10 text-orange-400 border-orange-500/20'
-                    }`}>
-                      {s.status.replace('_', ' ')}
-                    </span>
+                    <div className="flex flex-col items-end gap-3">
+                      <span className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase border ${
+                        s.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 
+                        s.status === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
+                        'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                      }`}>
+                        {s.status.replace('_', ' ')}
+                      </span>
+                      <button onClick={() => setSelectedSurat(s)} className="text-[10px] font-black text-purple-400 uppercase tracking-widest hover:underline">Lihat Detail →</button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        {/* Detail Modal */}
+        {selectedSurat && (
+          <div className="fixed inset-0 bg-[#020617]/90 backdrop-blur-md flex items-center justify-center p-6 z-50">
+            <div className="bg-[#0f172a] border border-white/10 rounded-3xl w-full max-w-2xl p-8 relative shadow-2xl animate-in zoom-in duration-300">
+              <button onClick={() => setSelectedSurat(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white text-2xl font-black">×</button>
+              <h2 className="text-2xl font-black text-white mb-6 uppercase">Detail Dokumen</h2>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-slate-500 font-bold uppercase">Pemohon</p>
+                  <p className="text-lg text-white font-bold">{selectedSurat.user?.nama}</p>
+                  <p className="text-xs text-slate-400">NIK: {selectedSurat.user?.nik}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-bold uppercase">Keterangan / Keperluan</p>
+                  <p className="text-sm text-slate-300 bg-slate-800/50 p-4 rounded-xl border border-white/5">{selectedSurat.keterangan || '-'}</p>
+                </div>
+                {selectedSurat.catatan && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-bold uppercase mb-2">Catatan RT</p>
+                    <p className="text-sm text-emerald-400 bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">{selectedSurat.catatan}</p>
+                  </div>
+                )}
+                {selectedSurat.file_ttd_digital && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-bold uppercase mb-2">Tanda Tangan Digital RT</p>
+                    <img src={selectedSurat.file_ttd_digital} alt="Tanda Tangan" className="w-48 object-contain rounded-xl border border-white/10 bg-white" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

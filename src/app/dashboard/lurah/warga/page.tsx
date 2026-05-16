@@ -39,6 +39,12 @@ export default function LurahWargaPage() {
     }
   };
 
+  const handleFetchAllData = async () => {
+    const query = `/warga?rt=${filterRT}&rw=${filterRW}&search=${search}&limit=10000`;
+    const res = await apiFetch(query);
+    return { data: res.items || [] };
+  };
+
   const handleRoleChange = async (targetId: string, newRole: string) => {
     let rtValue = selectedWarga.rt;
     let rwValue = selectedWarga.rw;
@@ -127,6 +133,7 @@ export default function LurahWargaPage() {
                  { key: 'alamat', label: 'Alamat' }
                ]}
                label="Export Halaman Ini"
+               fetchDataToExport={handleFetchAllData}
              />
           </div>
         </header>

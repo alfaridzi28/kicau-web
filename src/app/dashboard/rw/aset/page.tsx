@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
+import { fileToBase64, compressImage } from '@/lib/image';
 import Sidebar from '@/components/Sidebar';
 import StatCard from '@/components/StatCard';
 import ExportButton from '@/components/ExportButton';
@@ -96,17 +97,13 @@ export default function RWAsetPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', e.target.files[0]);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/upload`, { 
-        method: 'POST', body: formData 
-      });
-      const data = await res.json();
-      if (editingAset) setEditingAset({ ...editingAset, foto: data.url });
-      else setNewAset({ ...newAset, foto: data.url });
+      const base64 = await fileToBase64(e.target.files[0]);
+      const compressed = await compressImage(base64);
+      if (editingAset) setEditingAset({ ...editingAset, foto: compressed });
+      else setNewAset({ ...newAset, foto: compressed });
     } catch (err) {
-      alert("Gagal upload foto");
+      alert("Gagal memproses foto");
     } finally {
       setUploading(false);
     }

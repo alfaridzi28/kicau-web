@@ -8,6 +8,7 @@ export default function SuperadminAduanPage() {
   const { user, isLoading, logout } = useAuth();
   const [aduan, setAduan] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAduan, setSelectedAduan] = useState<any>(null);
 
   const fetchAduan = async () => {
     setLoading(true);
@@ -72,11 +73,49 @@ export default function SuperadminAduanPage() {
                 <div className="text-right flex flex-col items-end gap-2">
                    <p className="text-[10px] text-slate-500 font-black uppercase">Pelapor: {a.user?.nama}</p>
                    <p className="text-[9px] text-slate-600 font-mono italic">{new Date(a.created_at).toLocaleString('id-ID')}</p>
-                   <button className="mt-2 text-[10px] font-black text-purple-400 uppercase tracking-widest hover:underline">Detail Laporan →</button>
+                   <button onClick={() => setSelectedAduan(a)} className="mt-2 text-[10px] font-black text-purple-400 uppercase tracking-widest hover:underline">Detail Laporan →</button>
                 </div>
              </div>
            ))}
         </div>
+
+        {/* Detail Modal */}
+        {selectedAduan && (
+          <div className="fixed inset-0 bg-[#020617]/90 backdrop-blur-md flex items-center justify-center p-6 z-50">
+            <div className="bg-[#0f172a] border border-white/10 rounded-3xl w-full max-w-2xl p-8 relative shadow-2xl animate-in zoom-in duration-300">
+              <button onClick={() => setSelectedAduan(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white text-2xl font-black">×</button>
+              <h2 className="text-2xl font-black text-white mb-6 uppercase">Detail Aduan</h2>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-slate-500 font-bold uppercase">Judul</p>
+                  <p className="text-lg text-white font-bold">{selectedAduan.judul}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-bold uppercase">Isi Aduan</p>
+                  <p className="text-sm text-slate-300 bg-slate-800/50 p-4 rounded-xl border border-white/5">{selectedAduan.isi}</p>
+                </div>
+                {selectedAduan.foto_bukti && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-bold uppercase mb-2">Foto Bukti Aduan</p>
+                    <img src={selectedAduan.foto_bukti} alt="Bukti" className="w-full max-h-64 object-cover rounded-xl border border-white/10" />
+                  </div>
+                )}
+                {selectedAduan.balasan && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-bold uppercase mb-2">Tanggapan RT/RW</p>
+                    <p className="text-sm text-emerald-400 bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">{selectedAduan.balasan}</p>
+                  </div>
+                )}
+                {selectedAduan.foto_selesai && (
+                  <div>
+                    <p className="text-xs text-slate-500 font-bold uppercase mb-2">Foto Penyelesaian</p>
+                    <img src={selectedAduan.foto_selesai} alt="Penyelesaian" className="w-full max-h-64 object-cover rounded-xl border border-white/10" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

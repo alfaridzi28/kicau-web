@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
+import { fileToBase64, compressImage } from '@/lib/image';
 import Sidebar from '@/components/Sidebar';
 
 export default function RTAduanPage() {
@@ -36,14 +37,12 @@ export default function RTAduanPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', e.target.files[0]);
     try {
-      const res = await fetch('http://localhost:8000/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      setFotoSelesai(data.url);
+      const base64 = await fileToBase64(e.target.files[0]);
+      const compressed = await compressImage(base64);
+      setFotoSelesai(compressed);
     } catch (err) {
-      alert("Gagal upload foto");
+      alert("Gagal memproses foto");
     } finally {
       setUploading(false);
     }
@@ -51,6 +50,10 @@ export default function RTAduanPage() {
 
   const handleProcessAduan = async () => {
     if (!selectedAduan) return;
+    if (statusUpdate === 'selesai' && !fotoSelesai) {
+      alert('Foto Bukti Selesai wajib diunggah.');
+      return;
+    }
     try {
       await apiFetch(`/aduan/${selectedAduan.id}`, {
         method: 'PATCH',
@@ -99,19 +102,23 @@ export default function RTAduanPage() {
 
               <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-slate-300">{item.user?.nama}</p>
+                  <p className="text-xs font-bold text-slate-300">{item.user?.nama || 'Warga Anonim'}</p>
                 </div>
-                <button 
-                  onClick={() => {
-                    setSelectedAduan(item);
-                    setStatusUpdate(item.status);
-                    setBalasan(item.balasan || '');
-                    setFotoSelesai(item.foto_selesai || '');
-                  }}
-                  className="bg-indigo-600 hover:bg-indigo-50 text-white text-xs font-bold px-4 py-2 rounded-xl transition"
-                >
-                  Tindak Lanjut
-                </button>
+                {item.status !== 'selesai' ? (
+                  <button 
+                    onClick={() => {
+                      setSelectedAduan(item);
+                      setStatusUpdate(item.status);
+                      setBalasan(item.balasan || '');
+                      setFotoSelesai(item.foto_selesai || '');
+                    }}
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition"
+                  >
+                    Tindak Lanjut
+                  </button>
+                ) : (
+                  <span className="text-[10px] font-bold text-emerald-500 uppercase">Telah Selesai</span>
+                )}
               </div>
             </div>
           ))}
@@ -147,8 +154,8 @@ export default function RTAduanPage() {
                 </div>
                 {statusUpdate === "selesai" && (
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Foto Bukti Selesai</label>
-                  <input type="file" onChange={handleUpload} className="text-xs text-slate-400" />
+                  <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Foto Bukti Selesai <span className="text-red-500">*</span></label>
+                  <input type="file" accept="image/*" onChange={handleUpload} className="text-xs text-slate-400" />
                   {fotoSelesai && <img src={fotoSelesai} className="mt-4 w-32 h-32 object-cover rounded-xl" />}
                 </div>
                 )}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
+import { fileToBase64, compressImage } from '@/lib/image';
 import Sidebar from '@/components/Sidebar';
 import StatCard from '@/components/StatCard';
 import ExportButton from '@/components/ExportButton';
@@ -99,20 +100,34 @@ export default function RTAsetPage() {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', e.target.files[0]);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (editingAset) setEditingAset({ ...editingAset, foto: data.url });
-      else setNewAset({ ...newAset, foto: data.url });
+      const base64 = await fileToBase64(e.target.files[0]);
+      const compressed = await compressImage(base64);
+      if (editingAset) setEditingAset({ ...editingAset, foto: compressed });
+      else setNewAset({ ...newAset, foto: compressed });
     } catch (err) {
-      alert("Gagal upload foto");
+      alert("Gagal memproses foto");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleSaveAset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const dataToSave = editingAset || newAset;
+    if (!dataToSave.foto) return alert("Wajib unggah foto aset");
+    try {
+      if (editingAset) {
+        await apiFetch(`/aset/${editingAset.id}`, { method: 'PATCH', body: JSON.stringify(editingAset) });
+      } else {
+        await apiFetch('/aset', { method: 'POST', body: JSON.stringify(newAset) });
+      }
+      setShowAddModal(false);
+      setEditingAset(null);
+      setNewAset({ nama_aset: '', deskripsi: '', jumlah: 1, foto: '', status: 'tersedia', kepemilikan: 'aset_rt' });
+      fetchData();
+    } catch (err) {
+      alert("Gagal menyimpan aset");
     }
   };
 
@@ -291,10 +306,75 @@ export default function RTAsetPage() {
           </div>
         )}
         
-        {/* Reuse the Add/Edit Modal from before for Inventory Tab */}
-        {/* ... (Modal logic same as previous version but with consistent UI) */}
+        {/* Form Modal (Add / Edit) */}
+        {(showAddModal || editingAset) && (
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center p-6 z-50">
+             <div className="bg-slate-900 border border-white/10 rounded-[48px] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in duration-300">
+                <div className="p-10">
+                   <h2 className="text-3xl font-black text-white mb-8 tracking-tighter italic uppercase">{editingAset ? 'Edit Inventaris' : 'Tambah Inventaris'}</h2>
+                   <form onSubmit={handleSaveAset} className="space-y-6">
+                      <div className="grid grid-cols-2 gap-8">
+                         <div className="space-y-6">
+                            <div className="space-y-2">
+                               <label className="text-[10px] font-black text-slate-500 uppercase px-1">Nama Barang</label>
+                               <input required className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500" value={editingAset ? editingAset.nama_aset : newAset.nama_aset} onChange={e => editingAset ? setEditingAset({...editingAset, nama_aset: e.target.value}) : setNewAset({...newAset, nama_aset: e.target.value})} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black text-slate-500 uppercase px-1">Jumlah</label>
+                                  <input type="number" required className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500" value={editingAset ? editingAset.jumlah : newAset.jumlah} onChange={e => editingAset ? setEditingAset({...editingAset, jumlah: parseInt(e.target.value)}) : setNewAset({...newAset, jumlah: parseInt(e.target.value)})} />
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-[10px] font-black text-slate-500 uppercase px-1">Kondisi</label>
+                                  <select className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500" value={editingAset ? editingAset.status : newAset.status} onChange={e => editingAset ? setEditingAset({...editingAset, status: e.target.value}) : setNewAset({...newAset, status: e.target.value})}>
+                                     <option value="tersedia">Baik</option>
+                                     <option value="rusak">Rusak</option>
+                                  </select>
+                               </div>
+                            </div>
+                         </div>
+
+                         <div className="space-y-4">
+                            <label className="text-[10px] font-black text-slate-500 uppercase px-1">Foto Barang <span className="text-red-500">*</span></label>
+                            <div className="relative aspect-square bg-slate-800 rounded-3xl border-2 border-dashed border-white/10 overflow-hidden group hover:border-indigo-500/50 transition-all">
+                               {(editingAset ? editingAset.foto : newAset.foto) ? (
+                                  <>
+                                     <img src={editingAset ? editingAset.foto : newAset.foto} className="w-full h-full object-cover" />
+                                     <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all text-[10px] font-black text-white uppercase tracking-widest">
+                                        Ganti Foto
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleUpload} />
+                                     </label>
+                                  </>
+                               ) : (
+                                  <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer text-slate-500 hover:text-indigo-400 transition-all">
+                                     <span className="text-4xl mb-2">{uploading ? '⏳' : '📸'}</span>
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-center px-4">{uploading ? 'Mengunggah...' : 'Klik untuk Upload'}</span>
+                                     <input type="file" className="hidden" accept="image/*" onChange={handleUpload} />
+                                  </label>
+                               )}
+                            </div>
+                         </div>
+                      </div>
+
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-slate-500 uppercase px-1">Catatan Keterangan</label>
+                         <textarea className="w-full bg-slate-800 border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:border-indigo-500 h-24" placeholder="Detail lokasi atau spesifikasi..." value={editingAset ? editingAset.deskripsi : newAset.deskripsi} onChange={e => editingAset ? setEditingAset({...editingAset, deskripsi: e.target.value}) : setNewAset({...newAset, deskripsi: e.target.value})}></textarea>
+                      </div>
+
+                      <div className="flex gap-4 pt-4">
+                         <button type="button" onClick={() => { setShowAddModal(false); setEditingAset(null); }} className="flex-1 py-4 rounded-2xl text-slate-400 font-bold hover:bg-white/5 transition-all uppercase text-[10px] tracking-widest">Batal</button>
+                         <button type="submit" disabled={uploading} className="flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black uppercase tracking-widest shadow-lg shadow-indigo-900/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none ">
+                            {editingAset ? 'Simpan Perubahan' : 'Simpan Inventaris'}
+                         </button>
+                      </div>
+                   </form>
+                </div>
+             </div>
+          </div>
+        )}
 
       </main>
     </div>
   );
 }
+

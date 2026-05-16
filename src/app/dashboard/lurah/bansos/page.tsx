@@ -25,7 +25,7 @@ export default function LurahBansosPage() {
     setLoading(true);
     try {
       
-      let url = `/warga?bansos=true&rt=${filterRT}&rw=${filterRW}&search=${search}&skip=$0&limit=$10000`;
+      let url = `/warga?bansos=true&rt=${filterRT}&rw=${filterRW}&search=${search}&skip=0&limit=10000`;
       
       // Add category filter if selected
       if (filterCategory) {

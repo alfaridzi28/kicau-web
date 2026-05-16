@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth, apiFetch } from '@/lib/auth';
+import { compressImage } from '@/lib/image';
 import Sidebar from '@/components/Sidebar';
 import SignaturePad from '@/components/SignaturePad';
 import StatCard from '@/components/StatCard';
@@ -44,11 +45,12 @@ export default function RTSuratPage() {
     }
     
     try {
+      const compressedSig = await compressImage(signature);
       await apiFetch(`/surat/${selectedSurat.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
           status: 'approved',
-          file_ttd_digital: signature,
+          file_ttd_digital: compressedSig,
           catatan: catatan
         })
       });
@@ -265,5 +267,6 @@ export default function RTSuratPage() {
     </div>
   );
 }
+
 
 

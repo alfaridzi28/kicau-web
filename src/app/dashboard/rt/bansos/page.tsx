@@ -14,9 +14,9 @@ export default function RTBansosPage() {
   const fetchWarga = async () => {
     setLoading(true);
     try {
-      const data = await apiFetch(`/warga?rt=${user?.rt}&rw=${user?.rw}`);
+      const data = await apiFetch(`/warga?rt=${user?.rt}&rw=${user?.rw}&limit=10000`);
       // Filter for warga only (exclude staff/rt/rw)
-      setWarga(data.filter((w: any) => w.role === 'warga'));
+      setWarga(data.items ? data.items.filter((w: any) => w.role === 'warga') : []);
     } catch (err) {
       console.error(err);
     } finally {

@@ -51,6 +51,12 @@ export default function RWWargaPage() {
     }
   };
 
+  const handleFetchAllData = async () => {
+    const endpoint = `/warga?rw=${user?.rw}&rt=${filterRT}&search=${search}&limit=10000`;
+    const res = await apiFetch(endpoint);
+    return { data: res.items || [] };
+  };
+
   useEffect(() => {
     if (user) fetchData();
   }, [user, page, search, filterRT]);
@@ -95,6 +101,7 @@ export default function RWWargaPage() {
                  { key: 'alamat', label: 'Alamat' }
                ]}
                label="Export XLSX"
+               fetchDataToExport={handleFetchAllData}
              />
           </div>
         </header>

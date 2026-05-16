@@ -226,42 +226,42 @@ export default function LurahPemberitahuanPage() {
 
         {/* Create Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-[#020617]/99 backdrop-blur-[30px] flex items-center justify-center p-6 z-[2500]">
-            <div className="bg-[#0f172a] border border-white/10 rounded-[72px] w-full max-w-4xl p-20 shadow-[0_0_150px_rgba(79,70,229,0.2)] animate-in zoom-in duration-700">
-               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-16">
+          <div className="fixed inset-0 bg-[#020617]/99 backdrop-blur-[30px] flex items-center justify-center p-4 md:p-6 z-[2500]">
+            <div className="bg-[#0f172a] border border-white/10 rounded-[40px] w-full max-w-3xl p-8 md:p-12 shadow-[0_0_150px_rgba(79,70,229,0.2)] animate-in zoom-in duration-700 max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+               <div className="flex justify-between flex-wrap gap-y-4 items-start mb-8 flex-shrink-0">
                   <div>
-                     <h2 className="text-6xl font-black text-white tracking-tighter italic uppercase">Maklumat <span className="text-indigo-400">Baru</span></h2>
-                     <p className="text-slate-500 text-[12px] font-bold uppercase tracking-[0.4em] mt-3 ml-2">Diseminasi Informasi Strategis Kelurahan</p>
+                     <h2 className="text-4xl font-black text-white tracking-tighter italic uppercase">Maklumat <span className="text-indigo-400">Baru</span></h2>
+                     <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">Diseminasi Informasi Strategis Kelurahan</p>
                   </div>
-                  <button onClick={() => { setShowModal(false); setFormData({ judul: '', isi: '', scope: 'global' }); }} className="text-slate-500 hover:text-white text-5xl transition-colors font-thin">×</button>
+                  <button onClick={() => { setShowModal(false); setFormData({ judul: '', isi: '', scope: 'global' }); }} className="text-slate-500 hover:text-white text-4xl transition-colors font-thin">×</button>
                </div>
                
-               <form onSubmit={handleSubmit} className="space-y-12">
-                  <div className="space-y-6">
-                    <label className="text-[14px] font-black text-slate-400 uppercase tracking-[0.3em] block ml-4">Judul Maklumat Kelurahan</label>
+               <form onSubmit={handleSubmit} className="space-y-6 flex-1 flex flex-col">
+                  <div className="space-y-4">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest block">Judul Maklumat Kelurahan</label>
                     <input 
                       type="text" 
                       required
-                      className="w-full bg-slate-950/60 border border-white/10 rounded-[36px] px-12 py-8 text-white outline-none focus:ring-4 focus:ring-indigo-500/30 transition-all placeholder:text-slate-800 text-2xl shadow-inner font-bold"
+                      className="w-full bg-slate-950/60 border border-white/10 rounded-3xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-slate-700 text-lg shadow-inner font-bold"
                       value={formData.judul}
                       onChange={(e) => setFormData({...formData, judul: e.target.value})}
                       placeholder="Contoh: Pengumuman Hari Libur Pelayanan"
                     />
                   </div>
-                  <div className="space-y-6">
-                    <label className="text-[14px] font-black text-slate-400 uppercase tracking-[0.3em] block ml-4">Detail Isi Maklumat</label>
+                  <div className="space-y-4 flex-1 flex flex-col">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest block">Detail Isi Maklumat</label>
                     <textarea 
                       required
-                      rows={6}
-                      className="w-full bg-slate-950/60 border border-white/10 rounded-[36px] px-12 py-8 text-white outline-none focus:ring-4 focus:ring-indigo-500/30 transition-all placeholder:text-slate-800 resize-none text-2xl shadow-inner font-medium"
+                      rows={5}
+                      className="w-full bg-slate-950/60 border border-white/10 rounded-3xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-slate-700 resize-none text-base shadow-inner font-medium flex-1 min-h-[150px]"
                       value={formData.isi}
                       onChange={(e) => setFormData({...formData, isi: e.target.value})}
                       placeholder="Sampaikan pesan resmi kepada seluruh RW, RT, dan Warga..."
                     />
                   </div>
-                  <div className="flex gap-10 pt-10">
-                     <button type="button" onClick={() => { setShowModal(false); setFormData({ judul: '', isi: '', scope: 'global' }); }} className="flex-1 bg-white/5 text-white font-black py-8 rounded-[36px] uppercase tracking-[0.2em] text-[12px] hover:bg-white/10 transition active:scale-95 border border-white/5">Batalkan</button>
-                     <button type="submit" className="flex-1 bg-indigo-600 text-white font-black py-8 rounded-[36px] uppercase tracking-[0.2em] text-[12px] hover:bg-indigo-500 transition shadow-[0_0_100px_rgba(79,70,229,0.5)] active:scale-95 border border-indigo-400/30">Siarkan Ke Seluruh Kelurahan</button>
+                  <div className="flex gap-4 pt-6 flex-shrink-0">
+                     <button type="button" onClick={() => { setShowModal(false); setFormData({ judul: '', isi: '', scope: 'global' }); }} className="flex-1 bg-white/5 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-white/10 transition border border-white/5">Batalkan</button>
+                     <button type="submit" className="flex-1 bg-indigo-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-indigo-500 transition shadow-lg active:scale-95 border border-indigo-400/30">Siarkan</button>
                   </div>
                </form>
             </div>
