@@ -66,9 +66,10 @@ export default function SuperadminBansosPage() {
             data={allData.map(w => ({
               ...w,
               kategori: [
-                w.is_fakir && 'Bantuan Khusus (Fakir)',
-                w.is_miskin && 'Bantuan Sosial (Miskin)',
-                (w.is_ibu_hamil || w.is_balita) && 'Bantuan Logistik (Hamil/Balita)'
+                w.is_fakir && 'Fakir',
+                w.is_miskin && 'Miskin',
+                w.is_ibu_hamil && 'Ibu Hamil',
+                w.is_balita && 'Balita'
               ].filter(Boolean).join(', ')
             }))}
             filename={`Data_Bansos_Global`}

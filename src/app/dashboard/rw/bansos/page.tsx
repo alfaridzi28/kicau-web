@@ -46,20 +46,36 @@ export default function RWBansosPage() {
             <h1 className="text-4xl font-black text-white tracking-tighter italic">Rekap <span className="text-pink-400">Sosial RW {user.rw}</span></h1>
             <p className="text-slate-500 mt-1 font-bold uppercase tracking-widest text-[10px]">Monitoring Kesejahteraan Wilayah • {warga.length} Jiwa Terdata</p>
           </div>
-          <ExportButton 
-            data={warga}
-            filename={`Bansos_RW${user.rw}`}
-            columns={[
+          {(() => {
+            const mappedData = warga.map(w => ({
+              ...w,
+              kategori: [
+                w.is_fakir && 'Fakir',
+                w.is_miskin && 'Miskin',
+                w.is_ibu_hamil && 'Ibu Hamil',
+                w.is_balita && 'Balita'
+              ].filter(Boolean).join(', ')
+            }));
+            
+            return (
+              <ExportButton 
+                filename={`Bansos_RW${user.rw}`}
+                sheets={[
+                  { name: 'Fakir', data: mappedData.filter(w => w.is_fakir) },
+                  { name: 'Miskin', data: mappedData.filter(w => w.is_miskin) },
+                  { name: 'Ibu Hamil', data: mappedData.filter(w => w.is_ibu_hamil) },
+                  { name: 'Balita', data: mappedData.filter(w => w.is_balita) },
+                ]}
+                columns={[
               { key: 'nama', label: 'Nama Warga' },
               { key: 'nik', label: 'NIK' },
               { key: 'rt', label: 'RT' },
-              { key: 'is_fakir', label: 'Fakir' },
-              { key: 'is_miskin', label: 'Miskin' },
-              { key: 'is_ibu_hamil', label: 'Ibu Hamil' },
-              { key: 'is_balita', label: 'Balita' },
+              { key: 'kategori', label: 'Kategori Bantuan' },
               { key: 'alamat', label: 'Alamat' }
             ]}
           />
+          );
+          })()}
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
@@ -85,7 +101,6 @@ export default function RWBansosPage() {
                 <th className="p-4">Nama</th>
                 <th className="p-4">Alamat / RT</th>
                 <th className="p-4">Kategori Bansos</th>
-                <th className="p-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -110,9 +125,6 @@ export default function RWBansosPage() {
                       {w.is_ibu_hamil && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-400 uppercase">Ibu Hamil</span>}
                       {w.is_balita && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 uppercase">Balita</span>}
                     </div>
-                  </td>
-                  <td className="p-4 text-right">
-                    <button className="text-indigo-400 hover:text-indigo-300 text-xs font-bold transition">Detail</button>
                   </td>
                 </tr>
               ))}

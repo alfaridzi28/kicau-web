@@ -55,20 +55,36 @@ export default function RTBansosPage() {
             <h1 className="text-3xl font-extrabold text-white">Manajemen Data Sosial (Bansos)</h1>
             <p className="text-slate-400">Identifikasi warga yang berhak menerima bantuan sosial di RT {user.rt}</p>
           </div>
-          <ExportButton 
-            data={warga.filter(w => w.is_fakir || w.is_miskin || w.is_ibu_hamil || w.is_balita)}
-            filename={`Bansos_RT${user.rt}`}
-            columns={[
-              { key: 'nama', label: 'Nama Warga' },
-              { key: 'nik', label: 'NIK' },
-              { key: 'is_fakir', label: 'Bantuan Khusus (Fakir)' },
-              { key: 'is_miskin', label: 'Bantuan Sosial (Miskin)' },
-              { key: 'is_ibu_hamil', label: 'Bantuan Logistik (Hamil)' },
-              { key: 'is_balita', label: 'Bantuan Logistik (Balita)' },
-              { key: 'alamat', label: 'Alamat' }
-            ]}
-            label="Export Data Penerima"
-          />
+          {(() => {
+            const mappedData = warga.filter(w => w.is_fakir || w.is_miskin || w.is_ibu_hamil || w.is_balita).map(w => ({
+              ...w,
+              kategori: [
+                w.is_fakir && 'Fakir',
+                w.is_miskin && 'Miskin',
+                w.is_ibu_hamil && 'Ibu Hamil',
+                w.is_balita && 'Balita'
+              ].filter(Boolean).join(', ')
+            }));
+            
+            return (
+              <ExportButton 
+                filename={`Bansos_RT${user.rt}`}
+                sheets={[
+                  { name: 'Fakir', data: mappedData.filter(w => w.is_fakir) },
+                  { name: 'Miskin', data: mappedData.filter(w => w.is_miskin) },
+                  { name: 'Ibu Hamil', data: mappedData.filter(w => w.is_ibu_hamil) },
+                  { name: 'Balita', data: mappedData.filter(w => w.is_balita) },
+                ]}
+                columns={[
+                  { key: 'nama', label: 'Nama Warga' },
+                  { key: 'nik', label: 'NIK' },
+                  { key: 'kategori', label: 'Kategori Bantuan' },
+                  { key: 'alamat', label: 'Alamat' }
+                ]}
+                label="Export Data Penerima"
+              />
+            );
+          })()}
         </header>
 
         <div className="bg-slate-800/40 rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
