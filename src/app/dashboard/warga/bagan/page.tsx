@@ -27,7 +27,7 @@ export default function WargaBaganPage() {
 
   if (isLoading || !user) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
-  const clean = (s: any) => String(s || '').replace(/^0+/, '') || '0';
+  const clean = (s: any) => String(s || '').padStart(2, '0');
   
   const ketuaRw = warga.find(w => w.role === 'rw' && w.jabatan?.toLowerCase().includes('ketua'));
   const staffRw = warga.filter(w => w.role === 'rw' && !w.jabatan?.toLowerCase().includes('ketua'));
@@ -163,4 +163,5 @@ export default function WargaBaganPage() {
     </div>
   );
 }
+
 

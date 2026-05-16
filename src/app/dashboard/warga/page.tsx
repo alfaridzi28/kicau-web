@@ -49,7 +49,7 @@ export default function WargaDashboard() {
           
           // Organize officials using jabatan to distinguish scope
           const allStaff = staffData.items || [];
-          const clean = (s: any) => String(s || '').replace(/^0+/, '') || '0';
+          const clean = (s: any) => String(s || '').padStart(2, '0');
           
           const rw_chair = allStaff.find((w: any) => w.role === 'rw' && w.jabatan?.toLowerCase().includes('ketua'));
           const rw_staff = allStaff.find((w: any) => w.role === 'rw' && !w.jabatan?.toLowerCase().includes('ketua'));
@@ -297,4 +297,5 @@ export default function WargaDashboard() {
     </div>
   );
 }
+
 
