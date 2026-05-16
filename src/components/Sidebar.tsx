@@ -122,7 +122,7 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
       {/* Mobile Toggle Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-5 left-5 z-[60] bg-indigo-600/90 backdrop-blur border border-white/20 p-2.5 rounded-xl text-white shadow-xl flex items-center justify-center transition-all hover:bg-indigo-500"
+        className="lg:hidden fixed top-5 left-5 z-[9999] bg-indigo-600/90 backdrop-blur border border-white/20 p-2.5 rounded-xl text-white shadow-xl flex items-center justify-center transition-all hover:bg-indigo-500"
         aria-label="Toggle Menu"
       >
         <span className="text-xl leading-none">{isOpen ? '✕' : '☰'}</span>
@@ -131,14 +131,14 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
       {/* Overlay */}
       {isOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[50]"
+          className="lg:hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9990]"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar Container */}
       <aside className={`
-        fixed lg:relative inset-y-0 left-0 z-[55]
+        fixed lg:relative inset-y-0 left-0 z-[9995]
         transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300
         w-64 min-h-screen bg-gradient-to-b ${gradient} flex flex-col shadow-2xl flex-shrink-0
       `}>
