@@ -120,7 +120,7 @@ export default function RTAsetPage() {
       if (editingAset) {
         await apiFetch(`/aset/${editingAset.id}`, { method: 'PATCH', body: JSON.stringify(editingAset) });
       } else {
-        await apiFetch('/aset', { method: 'POST', body: JSON.stringify(newAset) });
+        await apiFetch('/aset', { method: 'POST', body: JSON.stringify({...newAset, rt: user?.rt, rw: user?.rw}) });
       }
       setShowAddModal(false);
       setEditingAset(null);
