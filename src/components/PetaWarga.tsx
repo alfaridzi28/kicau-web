@@ -137,7 +137,7 @@ export default function PetaWarga({ token }: PetaWargaProps) {
         ? `/bansos/geojson${rw ? `?rw=${rw}` : ''}${rt ? `&rt=${rt}` : ''}`
         : `/warga/geojson/points${rw ? `?rw=${rw}` : ''}${rt ? `&rt=${rt}` : ''}`;
 
-      const geojson: GeoJSON = await apiFetch(endpoint, token);
+      const geojson: GeoJSON = await apiFetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
       const features = geojson.features || [];
 
       if (features.length === 0) {
