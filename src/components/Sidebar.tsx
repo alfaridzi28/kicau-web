@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import packageJson from '../../package.json';
 
@@ -90,6 +90,11 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsNavigating(null);
+  }, [pathname]);
   
   // Resolve role: prioritaskan effective_role untuk staff agar mendapat menu admin
   const roleToUse = user?.effective_role || user?.role || 'warga';
@@ -167,22 +172,29 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
           <p className="text-white/40 text-xs uppercase tracking-wider mb-3 px-3">Menu</p>
           {menu.map((item) => {
             const active = isActive(item.href);
+            const navigating = isNavigating === item.href;
             return (
               <button
                 key={item.href}
+                disabled={isNavigating !== null}
                 onClick={() => {
+                  if (pathname !== item.href) {
+                    setIsNavigating(item.href);
+                  }
                   router.push(item.href);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                   active
                     ? 'bg-white/20 text-white shadow-lg'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <span className="text-base flex-shrink-0">{item.icon}</span>
+                <span className="text-base flex-shrink-0">
+                   {navigating ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div> : item.icon}
+                </span>
                 <span className="truncate">{item.label}</span>
-                {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />}
+                {active && !navigating && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />}
               </button>
             );
           })}
