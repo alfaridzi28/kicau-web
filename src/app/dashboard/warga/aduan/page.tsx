@@ -6,7 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import ImageUpload from '@/components/ImageUpload';
 
 export default function WargaBuatAduanPage() {
-  const { user, isLoading, logout } = useAuth();
+  const { user, token, isLoading, logout } = useAuth();
   const [judul, setJudul] = useState('');
   const [isi, setIsi] = useState('');
   const [foto, setFoto] = useState('');
@@ -105,7 +105,7 @@ export default function WargaBuatAduanPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-500 uppercase mb-2">Foto Bukti</label>
-                  <ImageUpload onUploadSuccess={setFoto} value={foto} />
+                  <ImageUpload onUpload={setFoto} currentUrl={foto} token={token || ''} />
                 </div>
                 <div className="flex flex-col justify-end">
                    <div className={`p-4 rounded-2xl border ${coords ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-slate-900 border-white/5 text-slate-500'}`}>
