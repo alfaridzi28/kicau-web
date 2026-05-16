@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import packageJson from '../../package.json';
 
@@ -88,6 +89,7 @@ const roleLabel: Record<string, string> = {
 export default function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
   
   // Resolve role: prioritaskan effective_role untuk staff agar mendapat menu admin
   const roleToUse = user?.effective_role || user?.role || 'warga';
@@ -96,90 +98,117 @@ export default function Sidebar({ user, onLogout }: SidebarProps) {
   const menu = menuByRole[roleToUse as keyof typeof menuByRole] || menuByRole.warga;
   const gradient = roleColors[roleToUse] || roleColors['warga'];
 
-  console.log("Sidebar render:", { user, roleToUse, hasMenu: !!menuByRole[roleToUse as keyof typeof menuByRole] });
-
   const isActive = (href: string) => {
     if (pathname === href) return true;
-    // For subpages like /dashboard/superadmin/warga matching /dashboard/superadmin
-    // We only want to highlight the exact match or sub-paths for complex menus
     const hrefParts = href.split('/').filter(Boolean);
     const pathParts = pathname.split('/').filter(Boolean);
-    
-    // Exact match
     if (pathname === href) return true;
-    
-    // If it's a dashboard root, only match exactly
     if (hrefParts.length === 2) return pathname === href;
-    
-    // For deeper pages, check startWith
     return pathname.startsWith(href);
   };
 
   return (
-    <aside className={`w-64 min-h-screen bg-gradient-to-b ${gradient} flex flex-col shadow-2xl flex-shrink-0`}>
-      {/* Header */}
-      <div className="p-6 border-b border-white/10">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl font-bold text-white">
-            {user.nama.charAt(0).toUpperCase()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-bold text-sm leading-tight truncate">{user.nama}</p>
-            <p className="text-white/60 text-xs truncate">{user.jabatan || roleLabel[user.role] || user.role}</p>
-          </div>
-        </div>
-        {(user.rt || user.rw) && (
-          <div className="bg-white/10 rounded-lg px-3 py-2 text-xs text-white/80">
-            {user.rt && <span>RT {user.rt}</span>}
-            {user.rt && user.rw && <span> / </span>}
-            {user.rw && <span>RW {user.rw}</span>}
-          </div>
-        )}
-      </div>
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 1024px) {
+          main {
+            padding-top: 5rem !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+          }
+        }
+      `}} />
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        <p className="text-white/40 text-xs uppercase tracking-wider mb-3 px-3">Menu</p>
-        {menu.map((item) => {
-          const active = isActive(item.href);
-          return (
-            <button
-              key={item.href}
-              onClick={() => router.push(item.href)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                active
-                  ? 'bg-white/20 text-white shadow-lg'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
-              }`}
+      {/* Mobile Toggle Button */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="lg:hidden fixed top-5 left-5 z-[60] bg-indigo-600/90 backdrop-blur border border-white/20 p-2.5 rounded-xl text-white shadow-xl flex items-center justify-center transition-all hover:bg-indigo-500"
+        aria-label="Toggle Menu"
+      >
+        <span className="text-xl leading-none">{isOpen ? '✕' : '☰'}</span>
+      </button>
+
+      {/* Overlay */}
+      {isOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[50]"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <aside className={`
+        fixed lg:relative inset-y-0 left-0 z-[55]
+        transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300
+        w-64 min-h-screen bg-gradient-to-b ${gradient} flex flex-col shadow-2xl flex-shrink-0
+      `}>
+        {/* Header */}
+        <div className="p-6 border-b border-white/10 mt-12 lg:mt-0">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl font-bold text-white flex-shrink-0">
+              {user.nama.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-bold text-sm leading-tight truncate">{user.nama}</p>
+              <p className="text-white/60 text-xs truncate">{user.jabatan || roleLabel[user.role] || user.role}</p>
+            </div>
+          </div>
+          {(user.rt || user.rw) && (
+            <div className="bg-white/10 rounded-lg px-3 py-2 text-xs text-white/80">
+              {user.rt && <span>RT {user.rt}</span>}
+              {user.rt && user.rw && <span> / </span>}
+              {user.rw && <span>RW {user.rw}</span>}
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+          <p className="text-white/40 text-xs uppercase tracking-wider mb-3 px-3">Menu</p>
+          {menu.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <button
+                key={item.href}
+                onClick={() => {
+                  router.push(item.href);
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  active
+                    ? 'bg-white/20 text-white shadow-lg'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <span className="text-base flex-shrink-0">{item.icon}</span>
+                <span className="truncate">{item.label}</span>
+                {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Branding + Logout */}
+        <div className="p-4 border-t border-white/10 space-y-3">
+          <div className="text-center px-2">
+            <p className="text-white/40 text-[10px] font-bold tracking-widest uppercase mb-1">
+              KICAU v{packageJson.version} — dibuat oleh Impuls
+            </p>
+            <a 
+              href="mailto:alfaridzi.rifqi28@gmail.com" 
+              className="text-white/20 text-[9px] hover:text-white/40 transition-colors truncate block"
             >
-              <span className="text-base flex-shrink-0">{item.icon}</span>
-              <span className="truncate">{item.label}</span>
-              {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Branding + Logout */}
-      <div className="p-4 border-t border-white/10 space-y-3">
-        <div className="text-center px-2">
-          <p className="text-white/40 text-[10px] font-bold tracking-widest uppercase mb-1">
-            KICAU v{packageJson.version} — dibuat oleh Impuls
-          </p>
-          <a 
-            href="mailto:alfaridzi.rifqi28@gmail.com" 
-            className="text-white/20 text-[9px] hover:text-white/40 transition-colors truncate block"
+              alfaridzi.rifqi28@gmail.com
+            </a>
+          </div>
+          <button
+            onClick={onLogout}
+            className="w-full bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-red-200 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2"
           >
-            alfaridzi.rifqi28@gmail.com
-          </a>
+            <span>🚪</span> Keluar
+          </button>
         </div>
-        <button
-          onClick={onLogout}
-          className="w-full bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-red-200 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2"
-        >
-          <span>🚪</span> Keluar
-        </button>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }
