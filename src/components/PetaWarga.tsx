@@ -132,10 +132,15 @@ export default function PetaWarga({ token }: PetaWargaProps) {
         if (layer._isCustomMarker) map.removeLayer(layer);
       });
 
+      const params = new URLSearchParams();
+      if (rw) params.append('rw', rw);
+      if (rt) params.append('rt', rt);
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+
       // Tentukan endpoint
       const endpoint = bansosOnly
-        ? `/bansos/geojson${rw ? `?rw=${rw}` : ''}${rt ? `&rt=${rt}` : ''}`
-        : `/warga/geojson/points${rw ? `?rw=${rw}` : ''}${rt ? `&rt=${rt}` : ''}`;
+        ? `/bansos/geojson${queryString}`
+        : `/warga/geojson/points${queryString}`;
 
       const geojson: GeoJSON = await apiFetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
       const features = geojson.features || [];
@@ -151,7 +156,7 @@ export default function PetaWarga({ token }: PetaWargaProps) {
       features.forEach((feature) => {
         const [lng, lat] = feature.geometry.coordinates;
         const props = feature.properties;
-        const color = bansosOnly ? '#f59e0b' : getMarkerColor(props as any);
+        const color = getMarkerColor(props as any);
 
         const marker = L.marker([lat, lng], { icon: createCustomIcon(L, color) });
         marker._isCustomMarker = true;
